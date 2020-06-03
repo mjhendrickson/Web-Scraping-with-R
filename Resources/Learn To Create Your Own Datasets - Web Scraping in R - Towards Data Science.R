@@ -1,4 +1,4 @@
-# Web Scraping in R vith rvest
+# Learn To Create Your Own Datasets — Web Scraping in R ####
 # https://towardsdatascience.com/learn-to-create-your-own-datasets-web-scraping-in-r-f934a31748a5
 
 # ----- Intro -----

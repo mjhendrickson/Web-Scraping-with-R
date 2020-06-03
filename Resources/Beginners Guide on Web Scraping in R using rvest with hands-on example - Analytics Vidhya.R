@@ -1,4 +1,4 @@
-# Web Scraping in R ####
+# Beginner’s Guide on Web Scraping in R (using rvest) with hands-on example ####
 # Analytics Vidhya
 # https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/
 

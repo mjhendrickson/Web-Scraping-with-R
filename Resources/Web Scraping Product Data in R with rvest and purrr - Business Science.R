@@ -1,4 +1,4 @@
-# Web Scraping Specialized Bike Site in R
+# Web Scraping Product Data in R with rvest and purrr
 # https://www.business-science.io/code-tools/2019/10/07/rvest-web-scraping.html
 
 # Load libraries ####
