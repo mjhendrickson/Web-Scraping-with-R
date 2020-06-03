@@ -17,3 +17,9 @@ paths_allowed(
 ```
 
 If the result is `TRUE`, you are permitted to scrape the site.
+
+## A little help selecting the right elements
+There are a few ways to select elements from a webpage.
+1. Viewing the page source, which is not user friendly.
+2. Inspecting the page via Chrome, though this may not be available for other browsers.
+3. Selector Gadget (<https://selectorgadget.com/>), which allows point and click selection of elements.
