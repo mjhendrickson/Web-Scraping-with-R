@@ -4,7 +4,7 @@
     <title>Web Scraping in R</title>
     <meta charset="utf-8" />
     <meta name="author" content="Dr. Matthew Hendrickson" />
-    <meta name="date" content="2020-06-11" />
+    <meta name="date" content="2020-06-13" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -13,7 +13,7 @@ class: center, middle, inverse, title-slide
 
 # Web Scraping in R
 ### Dr. Matthew Hendrickson
-### 2020-06-11
+### 2020-06-13
 
 ---
 
@@ -22,13 +22,57 @@ class: center, middle, inverse, title-slide
 
 
 
-background-image: url(https://upload.wikimedia.org/wikipedia/commons/b/be/Sharingan_triple.svg)
+name: topics
 
-???
+# Topics
 
-Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Sharingan_triple.svg)
+### Ensure these are updated
+
+1. About Me
+2. Robots.txt
+3. HTML Structure
+4. A Little Help with CSS
+5. Scraping
+6. Assembling
 
 ---
+
+name: about_me
+
+# About Me
+
+- Social Scientist by Training
+     - Psychology &amp; Music `%&gt;%`
+     - More Psychlogy `%&gt;%`
+     - Law &amp; Policy
+- Higher Education Analyst by Trade
+- R User by Stumbling
+     - Excel `%&gt;%`
+     - SPSS GUI `%&gt;%`
+     - SPSS Syntax `%&gt;%`
+     - SQL `%&gt;%`
+     - R
+
+---
+
+name: robots_txt
+
+# Robots.txt
+
+##### Always ensure you check the robots.txt file! This assures you are not breaking the terms of service by scraping the site.
+
+
+```r
+paths_allowed(paths = c("https://netflix.com/"))
+```
+
+```
+## [1] FALSE
+```
+
+---
+
+name: html_structure
 class: inverse, center, middle
 
 # HTML
@@ -37,11 +81,167 @@ class: inverse, center, middle
 
 ---
 
+name: html_diagram
+class: inverse, center, middle
+
 background-image: url(web-scraping-with-r_files/html-structure.png)
 
 ???
 
 Image credit: [Professor Shawn Santo](http://www2.stat.duke.edu/~fl35/teaching/440-19F/decks/webscraping2.html#3)
+
+---
+
+name: selector_gadget
+
+# A Little Help with CSS
+
+If you aren't familiar with CSS, extracting parts of a website can be daunting.
+
+SelectorGadget is incredibly helpful for this purpose.
+
+&lt;https://selectorgadget.com/&gt;
+
+* This is a Chrome only extension. Another option is to inspect the page elements.
+
+
+---
+
+name: scraping_header
+class: inverse, center, middle
+
+# Web Scraping
+
+---
+
+name: scraping
+
+# Determine a website to scrape
+
+### It only seems appropriate to pull data from Amazon regarding R books
+
+##### Ensure we can scrape the site
+
+
+```r
+paths_allowed(paths = c("https://amazon.com/"))
+```
+
+```
+## [1] TRUE
+```
+
+---
+
+name: scraping_amazon
+
+# Setting the URLs
+
+### Before you can get started, you must specific the URLs to pass to the function.
+
+
+```r
+amazon_pg_1 &lt;- read_html("https://www.amazon.com/s?k=R&amp;i=stripbooks&amp;rh=n%3A283155%2Cn%3A75%2Cn%3A13983&amp;dc&amp;qid=1592086532&amp;rnid=1000&amp;ref=sr_nr_n_1")
+amazon_pg_2 &lt;- read_html("https://www.amazon.com/s?k=R&amp;i=stripbooks&amp;rh=n%3A283155%2Cn%3A75%2Cn%3A13983&amp;dc&amp;page=2&amp;qid=1592086539&amp;rnid=1000&amp;ref=sr_pg_2")
+```
+
+---
+
+name: scraping_amazon_titles
+
+### Scraping Book Titles
+
+
+```r
+amazon_pg_1 %&gt;% 
+  html_nodes(".s-line-clamp-2") %&gt;% 
+  html_text() -&gt; amazon_titles_pg_1
+head(amazon_titles_pg_1)
+```
+
+```
+## [1] "\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                R for Data Science: Import, Tidy, Transform, Visualize, and Model Data\n            \n        \n        \n    \n\n\n    \n"                              
+## [2] "\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                Interactive Web-Based Data Visualization with R, plotly, and shiny (Chapman &amp; Hall/CRC The R Series)\n            \n        \n        \n    \n\n\n    \n"
+## [3] "\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                The Book of R: A First Course in Programming and Statistics\n            \n        \n        \n    \n\n\n    \n"                                         
+## [4] "\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                R Graphics Cookbook: Practical Recipes for Visualizing Data\n            \n        \n        \n    \n\n\n    \n"                                         
+## [5] "\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                Discovering Statistics Using R\n            \n        \n        \n    \n\n\n    \n"                                                                      
+## [6] "\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                Advanced R, Second Edition (Chapman &amp; Hall/CRC The R Series)\n            \n        \n        \n    \n\n\n    \n"
+```
+
+---
+
+name: scraping_amazon_titles_clean
+
+### The titles have a great deal of white space and breaks (\n), these need to be removed
+
+
+```r
+amazon_titles_pg_1 &lt;- str_trim(amazon_titles_pg_1) # Removes leading &amp; training space
+head(amazon_titles_pg_1)
+```
+
+```
+## [1] "R for Data Science: Import, Tidy, Transform, Visualize, and Model Data"                              
+## [2] "Interactive Web-Based Data Visualization with R, plotly, and shiny (Chapman &amp; Hall/CRC The R Series)"
+## [3] "The Book of R: A First Course in Programming and Statistics"                                         
+## [4] "R Graphics Cookbook: Practical Recipes for Visualizing Data"                                         
+## [5] "Discovering Statistics Using R"                                                                      
+## [6] "Advanced R, Second Edition (Chapman &amp; Hall/CRC The R Series)"
+```
+
+---
+
+name: scraping_amazon_author
+
+### Get the book author(s)
+
+
+
+---
+
+name: scraping_amazon_format
+
+### Get the book format
+
+
+
+---
+
+name: scraping_amazon_price
+
+### Get the book price
+
+
+```r
+amazon_pg_1 %&gt;% 
+  html_nodes(".a-price-whole") %&gt;% 
+  html_text() -&gt; amazon_price_pg_1
+head(amazon_price_pg_1)
+```
+
+```
+## [1] "39."  "24."  "71."  "18."  "164." "33."
+```
+
+---
+
+name: scraping_amazon_rating
+
+### Get the book rating
+
+
+
+---
+
+name: assemble_data
+
+# We Have the Pieces
+
+### Let's assemble the file
+
+---
+
+### Assemble the data
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

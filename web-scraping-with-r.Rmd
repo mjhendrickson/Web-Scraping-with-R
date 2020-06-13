@@ -15,7 +15,10 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
+options(htmltools.dir.version = FALSE, echo = FALSE)
+library(tidyverse)
+library(robotstxt)
+library(rvest)
 ```
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
@@ -26,13 +29,52 @@ style_duo_accent_inverse(
 )
 ```
 
-background-image: url(https://upload.wikimedia.org/wikipedia/commons/b/be/Sharingan_triple.svg)
+name: topics
 
-???
+# Topics
 
-Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Sharingan_triple.svg)
+### Ensure these are updated
+
+1. About Me
+2. Robots.txt
+3. HTML Structure
+4. A Little Help with CSS
+5. Scraping
+6. Assembling
 
 ---
+
+name: about_me
+
+# About Me
+
+- Social Scientist by Training
+     - Psychology & Music `%>%`
+     - More Psychlogy `%>%`
+     - Law & Policy
+- Higher Education Analyst by Trade
+- R User by Stumbling
+     - Excel `%>%`
+     - SPSS GUI `%>%`
+     - SPSS Syntax `%>%`
+     - SQL `%>%`
+     - R
+
+---
+
+name: robots_txt
+
+# Robots.txt
+
+##### Always ensure you check the robots.txt file! This assures you are not breaking the terms of service by scraping the site.
+
+```{r robots, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+paths_allowed(paths = c("https://netflix.com/"))
+```
+
+---
+
+name: html_structure
 class: inverse, center, middle
 
 # HTML
@@ -41,8 +83,144 @@ class: inverse, center, middle
 
 ---
 
+name: html_diagram
+class: inverse, center, middle
+
 background-image: url(web-scraping-with-r_files/html-structure.png)
 
 ???
 
 Image credit: [Professor Shawn Santo](http://www2.stat.duke.edu/~fl35/teaching/440-19F/decks/webscraping2.html#3)
+
+---
+
+name: selector_gadget
+
+# A Little Help with CSS
+
+If you aren't familiar with CSS, extracting parts of a website can be daunting.
+
+SelectorGadget is incredibly helpful for this purpose.
+
+<https://selectorgadget.com/>
+
+* This is a Chrome only extension. Another option is to inspect the page elements.
+
+
+---
+
+name: scraping_header
+class: inverse, center, middle
+
+# Web Scraping
+
+---
+
+name: scraping
+
+# Determine a website to scrape
+
+### It only seems appropriate to pull data from Amazon regarding R books
+
+##### Ensure we can scrape the site
+
+```{r robots_amazon, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+paths_allowed(paths = c("https://amazon.com/"))
+```
+
+---
+
+name: scraping_amazon
+
+# Setting the URLs
+
+### Before you can get started, you must specific the URLs to pass to the function.
+
+```{r amazon_html, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_pg_1 <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&qid=1592086532&rnid=1000&ref=sr_nr_n_1")
+amazon_pg_2 <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&page=2&qid=1592086539&rnid=1000&ref=sr_pg_2")
+```
+
+---
+
+name: scraping_amazon_titles
+
+### Scraping Book Titles
+
+```{r amazon_title, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_pg_1 %>% 
+  html_nodes(".s-line-clamp-2") %>% 
+  html_text() -> amazon_titles_pg_1
+head(amazon_titles_pg_1)
+```
+
+---
+
+name: scraping_amazon_titles_clean
+
+### The titles have a great deal of white space and breaks (\n), these need to be removed
+
+```{r amazon_title_clean, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_titles_pg_1 <- str_trim(amazon_titles_pg_1) # Removes leading & training space
+head(amazon_titles_pg_1)
+```
+
+---
+
+name: scraping_amazon_author
+
+### Get the book author(s)
+
+```{r}
+
+```
+
+---
+
+name: scraping_amazon_format
+
+### Get the book format
+
+```{r}
+
+```
+
+---
+
+name: scraping_amazon_price
+
+### Get the book price
+
+```{r}
+amazon_pg_1 %>% 
+  html_nodes(".a-price-whole") %>% 
+  html_text() -> amazon_price_pg_1
+head(amazon_price_pg_1)
+```
+
+---
+
+name: scraping_amazon_rating
+
+### Get the book rating
+
+```{r}
+
+```
+
+---
+
+name: assemble_data
+
+# We Have the Pieces
+
+### Let's assemble the file
+
+---
+
+### Assemble the data
+
+```{r}
+
+```
+
