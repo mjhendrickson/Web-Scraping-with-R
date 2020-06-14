@@ -29,6 +29,17 @@ style_duo_accent_inverse(
 )
 ```
 
+name: fix
+
+# ITEMS TO FIX:
+
+1. Author
+2. Rating Count (works, clean it up)
+3. Scraping Methods
+4. Data Assembly
+
+---
+
 name: topics
 
 # Topics
@@ -39,8 +50,9 @@ name: topics
 2. Robots.txt
 3. HTML Structure
 4. A Little Help with CSS
-5. Scraping
-6. Assembling
+5. Scraping Methods
+6. Scraping
+7. Assembling
 
 ---
 
@@ -138,7 +150,7 @@ name: scraping_amazon
 
 ```{r amazon_html, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_pg_1 <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&qid=1592086532&rnid=1000&ref=sr_nr_n_1")
-amazon_pg_2 <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&page=2&qid=1592086539&rnid=1000&ref=sr_pg_2")
+# amazon_pg_2 <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&page=2&qid=1592086539&rnid=1000&ref=sr_pg_2")
 ```
 
 ---
@@ -171,8 +183,13 @@ name: scraping_amazon_author
 
 ### Get the book author(s)
 
-```{r}
-
+```{r amazon_author, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_pg_1 %>% 
+#  html_nodes("a.a-size-base.a-link-normal") %>% 
+  html_nodes("div.a-row.a-size-base.a-color-secondary") %>% 
+  html_text() %>% 
+  str_trim() -> amazon_authors_pg_1
+head(amazon_authors_pg_1)
 ```
 
 ---
@@ -181,8 +198,12 @@ name: scraping_amazon_format
 
 ### Get the book format
 
-```{r}
-
+```{r format, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_pg_1 %>% 
+  html_nodes("a.a-size-base.a-link-normal.a-text-bold") %>% 
+  html_text() %>% 
+  str_trim() -> amazon_format_pg_1
+head(amazon_format_pg_1)
 ```
 
 ---
@@ -191,10 +212,26 @@ name: scraping_amazon_price
 
 ### Get the book price
 
-```{r}
+```{r price_whole, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_pg_1 %>% 
   html_nodes(".a-price-whole") %>% 
-  html_text() -> amazon_price_pg_1
+  html_text() -> amazon_price_whole_pg_1
+head(amazon_price_whole_pg_1)
+```
+
+##### Get (the rest of) the book price
+
+```{r price_fraction, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_pg_1 %>% 
+  html_nodes(".a-price-fraction") %>% 
+  html_text() -> amazon_price_fraction_pg_1
+head(amazon_price_fraction_pg_1)
+```
+
+##### Combine price portions
+
+```{r price_total, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_price_pg_1 <- as.numeric(paste(amazon_price_whole_pg_1, amazon_price_fraction_pg_1, sep = ""))
 head(amazon_price_pg_1)
 ```
 
@@ -204,8 +241,52 @@ name: scraping_amazon_rating
 
 ### Get the book rating
 
-```{r}
+```{r rate, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_pg_1 %>% 
+  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4-5.aok-align-bottom") %>% 
+  html_text() -> amazon_rating_pg_1
+head(amazon_rating_pg_1)
+```
 
+```{r rate_trim, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_rating_pg_1 <- as.numeric(substr(amazon_rating_pg_1, 1, 3))
+head(amazon_rating_pg_1)
+```
+
+---
+
+name: scraping_amazon_num_ratings
+
+### Get the book rating count
+
+```{r rate_n, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_pg_1 %>% 
+#  html_nodes("span.a-size-base") %>% 
+  html_nodes("div.a-row.a-size-small") %>% 
+  html_text() -> amazon_rate_n_pg_1
+amazon_rate_n_pg_1 <- str_trim(amazon_rate_n_pg_1)
+amazon_rate_n_pg_1 <- str_sub(amazon_rate_n_pg_1, -5)
+amazon_rate_n_pg_1 <- str_trim(amazon_rate_n_pg_1)
+amazon_rate_n_pg_1 <- as.numeric(amazon_rate_n_pg_1)
+head(amazon_rate_n_pg_1)
+```
+
+---
+
+name: scraping_amazon_pub_date
+
+### Get the book publication date
+
+```{r pub_dt, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_pg_1 %>% 
+  html_nodes("span.a-size-base.a-color-secondary.a-text-normal") %>% 
+  html_text() -> amazon_pub_dt_pg_1
+head(amazon_pub_dt_pg_1)
+```
+
+```{r pub_dt_clean, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_pub_dt_pg_1 <- as.Date(amazon_pub_dt_pg_1, "%b %d, %Y")
+head(amazon_pub_dt_pg_1)
 ```
 
 ---
@@ -220,7 +301,7 @@ name: assemble_data
 
 ### Assemble the data
 
-```{r}
+```{r, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 
 ```
 

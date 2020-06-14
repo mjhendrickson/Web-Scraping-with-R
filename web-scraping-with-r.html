@@ -22,6 +22,17 @@ class: center, middle, inverse, title-slide
 
 
 
+name: fix
+
+# ITEMS TO FIX:
+
+1. Author
+2. Rating Count (works, clean it up)
+3. Scraping Methods
+4. Data Assembly
+
+---
+
 name: topics
 
 # Topics
@@ -32,8 +43,9 @@ name: topics
 2. Robots.txt
 3. HTML Structure
 4. A Little Help with CSS
-5. Scraping
-6. Assembling
+5. Scraping Methods
+6. Scraping
+7. Assembling
 
 ---
 
@@ -142,7 +154,7 @@ name: scraping_amazon
 
 ```r
 amazon_pg_1 &lt;- read_html("https://www.amazon.com/s?k=R&amp;i=stripbooks&amp;rh=n%3A283155%2Cn%3A75%2Cn%3A13983&amp;dc&amp;qid=1592086532&amp;rnid=1000&amp;ref=sr_nr_n_1")
-amazon_pg_2 &lt;- read_html("https://www.amazon.com/s?k=R&amp;i=stripbooks&amp;rh=n%3A283155%2Cn%3A75%2Cn%3A13983&amp;dc&amp;page=2&amp;qid=1592086539&amp;rnid=1000&amp;ref=sr_pg_2")
+# amazon_pg_2 &lt;- read_html("https://www.amazon.com/s?k=R&amp;i=stripbooks&amp;rh=n%3A283155%2Cn%3A75%2Cn%3A13983&amp;dc&amp;page=2&amp;qid=1592086539&amp;rnid=1000&amp;ref=sr_pg_2")
 ```
 
 ---
@@ -196,6 +208,23 @@ name: scraping_amazon_author
 ### Get the book author(s)
 
 
+```r
+amazon_pg_1 %&gt;% 
+#  html_nodes("a.a-size-base.a-link-normal") %&gt;% 
+  html_nodes("div.a-row.a-size-base.a-color-secondary") %&gt;% 
+  html_text() %&gt;% 
+  str_trim() -&gt; amazon_authors_pg_1
+head(amazon_authors_pg_1)
+```
+
+```
+## [1] "by \n\n\n\n\n\n    \n        \n        \n            Hadley Wickham\n        \n    \n\n and \n\n\n\n\n\n    \n        \n        \n            Garrett Grolemund\n        \n    \n\n | Jan 10, 2017"
+## [2] "Get it as soon as Mon, Jun 15\n\n\n\n\n\n    FREE Shipping by Amazon"                                                                                                                              
+## [3] "More Buying Choices$35.00\n\n\n\n\n\n    \n        \n        \n            (36 used &amp; new offers)"                                                                                                 
+## [4] "by \n\n\n\n\n\n    \n        \n        \n            Carson Sievert\n        \n    \n\n | Jan 21, 2020"                                                                                            
+## [5] "Get it as soon as Mon, Jun 15\n\n\n\n\n\n    FREE Shipping by Amazon"                                                                                                                              
+## [6] "Get it as soon as Tue, Jun 16\n\n\n\n\n\n    FREE Shipping by Amazon"
+```
 
 ---
 
@@ -204,6 +233,17 @@ name: scraping_amazon_format
 ### Get the book format
 
 
+```r
+amazon_pg_1 %&gt;% 
+  html_nodes("a.a-size-base.a-link-normal.a-text-bold") %&gt;% 
+  html_text() %&gt;% 
+  str_trim() -&gt; amazon_format_pg_1
+head(amazon_format_pg_1)
+```
+
+```
+## [1] "Paperback" "Kindle"    "Paperback" "Kindle"    "Hardcover" "Paperback"
+```
 
 ---
 
@@ -215,12 +255,38 @@ name: scraping_amazon_price
 ```r
 amazon_pg_1 %&gt;% 
   html_nodes(".a-price-whole") %&gt;% 
-  html_text() -&gt; amazon_price_pg_1
-head(amazon_price_pg_1)
+  html_text() -&gt; amazon_price_whole_pg_1
+head(amazon_price_whole_pg_1)
 ```
 
 ```
 ## [1] "39."  "24."  "71."  "18."  "164." "33."
+```
+
+##### Get (the rest of) the book price
+
+
+```r
+amazon_pg_1 %&gt;% 
+  html_nodes(".a-price-fraction") %&gt;% 
+  html_text() -&gt; amazon_price_fraction_pg_1
+head(amazon_price_fraction_pg_1)
+```
+
+```
+## [1] "49" "99" "95" "58" "57" "04"
+```
+
+##### Combine price portions
+
+
+```r
+amazon_price_pg_1 &lt;- as.numeric(paste(amazon_price_whole_pg_1, amazon_price_fraction_pg_1, sep = ""))
+head(amazon_price_pg_1)
+```
+
+```
+## [1]  39.49  24.99  71.95  18.58 164.57  33.04
 ```
 
 ---
@@ -230,6 +296,80 @@ name: scraping_amazon_rating
 ### Get the book rating
 
 
+```r
+amazon_pg_1 %&gt;% 
+  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4-5.aok-align-bottom") %&gt;% 
+  html_text() -&gt; amazon_rating_pg_1
+head(amazon_rating_pg_1)
+```
+
+```
+## [1] "4.7 out of 5 stars" "4.3 out of 5 stars" "4.7 out of 5 stars"
+## [4] "4.5 out of 5 stars" "4.7 out of 5 stars" "4.3 out of 5 stars"
+```
+
+
+```r
+amazon_rating_pg_1 &lt;- as.numeric(substr(amazon_rating_pg_1, 1, 3))
+head(amazon_rating_pg_1)
+```
+
+```
+## [1] 4.7 4.3 4.7 4.5 4.7 4.3
+```
+
+---
+
+name: scraping_amazon_num_ratings
+
+### Get the book rating count
+
+
+```r
+amazon_pg_1 %&gt;% 
+#  html_nodes("span.a-size-base") %&gt;% 
+  html_nodes("div.a-row.a-size-small") %&gt;% 
+  html_text() -&gt; amazon_rate_n_pg_1
+amazon_rate_n_pg_1 &lt;- str_trim(amazon_rate_n_pg_1)
+amazon_rate_n_pg_1 &lt;- str_sub(amazon_rate_n_pg_1, -5)
+amazon_rate_n_pg_1 &lt;- str_trim(amazon_rate_n_pg_1)
+amazon_rate_n_pg_1 &lt;- as.numeric(amazon_rate_n_pg_1)
+head(amazon_rate_n_pg_1)
+```
+
+```
+## [1] 422  75  13 254  30   3
+```
+
+---
+
+name: scraping_amazon_pub_date
+
+### Get the book publication date
+
+
+```r
+amazon_pg_1 %&gt;% 
+  html_nodes("span.a-size-base.a-color-secondary.a-text-normal") %&gt;% 
+  html_text() -&gt; amazon_pub_dt_pg_1
+head(amazon_pub_dt_pg_1)
+```
+
+```
+## [1] "Jan 10, 2017" "Jan 21, 2020" "Jul 16, 2016" "Nov 30, 2018" "Apr 5, 2012" 
+## [6] "May 30, 2019"
+```
+
+
+```r
+amazon_pub_dt_pg_1 &lt;- as.Date(amazon_pub_dt_pg_1, "%b %d, %Y")
+head(amazon_pub_dt_pg_1)
+```
+
+```
+## [1] "2017-01-10" "2020-01-21" "2016-07-16" "2018-11-30" "2012-04-05"
+## [6] "2019-05-30"
+```
 
 ---
 
