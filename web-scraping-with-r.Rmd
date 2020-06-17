@@ -15,7 +15,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE, echo = FALSE)
+options(htmltools.dir.version = FALSE, echo = FALSE, warning=FALSE)
 library(tidyverse)
 library(robotstxt)
 library(rvest)
@@ -37,6 +37,8 @@ name: fix
 2. Rating Count (works, clean it up)
 3. Scraping Methods
 4. Data Assembly
+5. A Little About Web Scraping
+6. Multiple format & price entries
 
 ---
 
@@ -47,12 +49,14 @@ name: topics
 ### Ensure these are updated
 
 1. About Me
-2. Robots.txt
-3. HTML Structure
-4. A Little Help with CSS
-5. Scraping Methods
-6. Scraping
-7. Assembling
+2. A Little About Web Scraping
+3. Robots.txt
+4. HTML Structure
+5. A Little Help with CSS
+6. Scraping Methods (HTML & XPATH)
+7. The Setup
+8. Scraping the Data
+9. Assembling the Data
 
 ---
 
@@ -74,6 +78,27 @@ name: about_me
 
 ---
 
+name: web_scraping_intro
+
+# A Little About Web Scraping
+
+1. Purpose
+
+Web scraping is a flexible method to extract data from the internet. It can involve extracting numerical or text data.
+
+2. Use Cases
+
+There are many uses for web scraping, inlcuding but not limited it:
+   a. Price monitoring
+   b. Sentiment analysis
+   c. Time series tracking and analysis
+
+3. Robots File
+
+Always ensure - PRIOR to scraping - that you have rights to scrape the website. This is critical as you can be blocked from sites or even face legal action. This can easily be accomplished with the `robotstxt` package.
+
+---
+
 name: robots_txt
 
 # Robots.txt
@@ -83,6 +108,8 @@ name: robots_txt
 ```{r robots, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 paths_allowed(paths = c("https://netflix.com/"))
 ```
+
+This example shows that Netflix does not allow you to scrape their site.
 
 ---
 
@@ -128,7 +155,30 @@ class: inverse, center, middle
 
 ---
 
-name: scraping
+name: scraping_methods
+
+# Scraping Methods
+
+1. HTML
+2. XPATH
+
+---
+
+name: setup
+
+Set up the environment to scrap the site.
+
+```{r setup_slide, eval = FALSE}
+library(tidyverse)
+library(robotstxt)
+library(rvest)
+```
+
+That's it! These are all the tools you'll need.
+
+---
+
+name: scraping_robots
 
 # Determine a website to scrape
 
@@ -140,16 +190,18 @@ name: scraping
 paths_allowed(paths = c("https://amazon.com/"))
 ```
 
+We are good to scrape!
+
 ---
 
-name: scraping_amazon
+name: scraping_amazon_url
 
 # Setting the URLs
 
 ### Before you can get started, you must specific the URLs to pass to the function.
 
 ```{r amazon_html, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_pg_1 <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&qid=1592086532&rnid=1000&ref=sr_nr_n_1")
+amazon <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&qid=1592086532&rnid=1000&ref=sr_nr_n_1")
 # amazon_pg_2 <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&page=2&qid=1592086539&rnid=1000&ref=sr_pg_2")
 ```
 
@@ -160,11 +212,15 @@ name: scraping_amazon_titles
 ### Scraping Book Titles
 
 ```{r amazon_title, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_pg_1 %>% 
+amazon %>% 
   html_nodes(".s-line-clamp-2") %>% 
-  html_text() -> amazon_titles_pg_1
-head(amazon_titles_pg_1)
+  html_text() -> amazon_titles
+head(amazon_titles)
 ```
+
+The element pulls a number of breaks and blank spaces.
+
+Let's clean this up with `str_trim`.
 
 ---
 
@@ -173,9 +229,25 @@ name: scraping_amazon_titles_clean
 ### The titles have a great deal of white space and breaks (\n), these need to be removed
 
 ```{r amazon_title_clean, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_titles_pg_1 <- str_trim(amazon_titles_pg_1) # Removes leading & training space
-head(amazon_titles_pg_1)
+amazon_titles <- str_trim(amazon_titles) # Removes leading & training space
+head(amazon_titles)
 ```
+
+This simple function returns cleaned text.
+
+Unfortunately, there are mutilple formats and prices for each title. Here's we'll create additional title records for creating the dataset.
+
+---
+
+name: scraping_amazon_titles_duplicate
+
+```{r amazon_title_duplicate, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+#amazon_titles %>% 
+  #append(values = NA, after = 1) -> amazon_titles
+#head(amazon_titles)
+```
+
+This structure will serve our needs for future steps.
 
 ---
 
@@ -184,13 +256,17 @@ name: scraping_amazon_author
 ### Get the book author(s)
 
 ```{r amazon_author, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_pg_1 %>% 
+amazon %>% 
 #  html_nodes("a.a-size-base.a-link-normal") %>% 
   html_nodes("div.a-row.a-size-base.a-color-secondary") %>% 
   html_text() %>% 
-  str_trim() -> amazon_authors_pg_1
-head(amazon_authors_pg_1)
+  str_trim() -> amazon_authors
+head(amazon_authors)
 ```
+
+We run into issues here due to the element in which authors are placed.
+
+We also need to split the author fields.
 
 ---
 
@@ -199,11 +275,11 @@ name: scraping_amazon_format
 ### Get the book format
 
 ```{r format, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_pg_1 %>% 
+amazon %>% 
   html_nodes("a.a-size-base.a-link-normal.a-text-bold") %>% 
   html_text() %>% 
-  str_trim() -> amazon_format_pg_1
-head(amazon_format_pg_1)
+  str_trim() -> amazon_format
+head(amazon_format)
 ```
 
 ---
@@ -213,26 +289,28 @@ name: scraping_amazon_price
 ### Get the book price
 
 ```{r price_whole, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_pg_1 %>% 
+amazon %>% 
   html_nodes(".a-price-whole") %>% 
-  html_text() -> amazon_price_whole_pg_1
-head(amazon_price_whole_pg_1)
+  html_text() -> amazon_price_whole
+head(amazon_price_whole)
 ```
+
+The price structure splits price into two elements. We must pull each and combine them into a single price.
 
 ##### Get (the rest of) the book price
 
 ```{r price_fraction, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_pg_1 %>% 
+amazon %>% 
   html_nodes(".a-price-fraction") %>% 
-  html_text() -> amazon_price_fraction_pg_1
-head(amazon_price_fraction_pg_1)
+  html_text() -> amazon_price_fraction
+head(amazon_price_fraction)
 ```
 
 ##### Combine price portions
 
 ```{r price_total, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_price_pg_1 <- as.numeric(paste(amazon_price_whole_pg_1, amazon_price_fraction_pg_1, sep = ""))
-head(amazon_price_pg_1)
+amazon_price <- as.numeric(paste(amazon_price_whole, amazon_price_fraction, sep = ""))
+head(amazon_price)
 ```
 
 ---
@@ -242,15 +320,32 @@ name: scraping_amazon_rating
 ### Get the book rating
 
 ```{r rate, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_pg_1 %>% 
+amazon %>% 
   html_nodes("i.a-icon.a-icon-star-small.a-star-small-4-5.aok-align-bottom") %>% 
-  html_text() -> amazon_rating_pg_1
-head(amazon_rating_pg_1)
+  html_text() -> amazon_rating
+head(amazon_rating)
 ```
 
+Let's trim this into a usable metric.
+
 ```{r rate_trim, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_rating_pg_1 <- as.numeric(substr(amazon_rating_pg_1, 1, 3))
-head(amazon_rating_pg_1)
+amazon_rating <- as.numeric(substr(amazon_rating, 1, 3))
+head(amazon_rating)
+```
+
+---
+
+name: scraping_amazon_rating_missing
+
+Another issue with ratings is that not all titles have ratings. We must adjust for this.
+
+I'll do this manually by appending NA where ratings are missing.
+
+```{r rate_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_rating %>% 
+  append(values = NA, after = 1) %>% 
+  append(values = NA, after = 11) -> amazon_rating
+head(amazon_rating)
 ```
 
 ---
@@ -259,34 +354,49 @@ name: scraping_amazon_num_ratings
 
 ### Get the book rating count
 
+We'll run into the same issue as the actual rating. But first, we'll also see a number of cleaning steps are needed.
+
 ```{r rate_n, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_pg_1 %>% 
+amazon %>% 
 #  html_nodes("span.a-size-base") %>% 
   html_nodes("div.a-row.a-size-small") %>% 
-  html_text() -> amazon_rate_n_pg_1
-amazon_rate_n_pg_1 <- str_trim(amazon_rate_n_pg_1)
-amazon_rate_n_pg_1 <- str_sub(amazon_rate_n_pg_1, -5)
-amazon_rate_n_pg_1 <- str_trim(amazon_rate_n_pg_1)
-amazon_rate_n_pg_1 <- as.numeric(amazon_rate_n_pg_1)
-head(amazon_rate_n_pg_1)
+  html_text() -> amazon_rate_n
+amazon_rate_n <- str_trim(amazon_rate_n) # trim
+#amazon_rate_n <- str_sub(amazon_rate_n, regex(?<=\s))
+amazon_rate_n <- str_sub(amazon_rate_n, -5) # keep last 5 characters
+amazon_rate_n <- str_trim(amazon_rate_n) # trim leading spaces
+amazon_rate_n <- as.numeric(amazon_rate_n)
+head(amazon_rate_n)
 ```
 
 ---
 
+name: scraping_amazon_num_ratings_missing
+
+```{r rate_n_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_rate_n %>% 
+  append(values = NA, after = 1) %>% 
+  append(values = NA, after = 11) -> amazon_rate_n
+head(amazon_rate_n)
+```
+
+---
 name: scraping_amazon_pub_date
 
 ### Get the book publication date
 
 ```{r pub_dt, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_pg_1 %>% 
+amazon %>% 
   html_nodes("span.a-size-base.a-color-secondary.a-text-normal") %>% 
-  html_text() -> amazon_pub_dt_pg_1
-head(amazon_pub_dt_pg_1)
+  html_text() -> amazon_pub_dt
+head(amazon_pub_dt)
 ```
 
+We need to convert this to a date to allow easier analysis.
+
 ```{r pub_dt_clean, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_pub_dt_pg_1 <- as.Date(amazon_pub_dt_pg_1, "%b %d, %Y")
-head(amazon_pub_dt_pg_1)
+amazon_pub_dt <- as.Date(amazon_pub_dt, "%b %d, %Y")
+head(amazon_pub_dt)
 ```
 
 ---
@@ -302,6 +412,13 @@ name: assemble_data
 ### Assemble the data
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-
+#r_books <- tibble(title = amazon_titles,
+#                  author = amazon_authors,
+#                  text.format = amazon_format,
+#                  price = amazon_price,
+#                  rating = amazon_rating,
+#                  num.ratings = amazon_rate_n,
+#                  publication.date = amazon_pub_dt)
+#head(r_books)
 ```
 
