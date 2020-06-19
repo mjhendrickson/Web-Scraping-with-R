@@ -57,6 +57,7 @@ name: topics
 7. The Setup
 8. Scraping the Data
 9. Assembling the Data
+10. References & Resources
 
 ---
 
@@ -66,21 +67,19 @@ name: about_me
 
 - Social Scientist by Training
      - Psychology & Music `%>%`
-     - More Psychlogy `%>%`
+     - More Psychology `%>%`
      - Law & Policy
 - Higher Education Analyst by Trade
-- R User by Stumbling
-     - Excel `%>%`
-     - SPSS GUI `%>%`
-     - SPSS Syntax `%>%`
-     - SQL `%>%`
-     - R
+- Independent Consultant
+- 13 years in analytics
 
 ---
 
 name: web_scraping_intro
 
 # A Little About Web Scraping
+
+"Web scraping is the process of automatically mining data or collecting information from the World Wide Web." -- Wikipedia
 
 1. Purpose
 
@@ -422,3 +421,13 @@ name: assemble_data
 #head(r_books)
 ```
 
+---
+
+name: references
+
+- Dataquest (unknown). "Tutorial: Web Scraping in R with rvest." [https://www.dataquest.io/blog/web-scraping-in-r-rvest/](https://www.dataquest.io/blog/web-scraping-in-r-rvest/).
+- Im J (2019). "Web Scraping Product Data in R with rvest and purrr." [https://www.business-science.io/code-tools/2019/10/07/rvest-web-scraping.html](https://www.business-science.io/code-tools/2019/10/07/rvest-web-scraping.html).
+- Kaushik S (2017). "Beginner's Guide on Web Scraping in R (using rvest) with hands-on example." [https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/](https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/).
+- Perceptive Analytics on KDnuggets (2018). "A Primer on Web Scraping in R." [https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html](https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html).
+- Rsquared Academy (2019). "Practical Introduction to Web Scraping in R." [https://blog.rsquaredacademy.com/2019/04/11/web-scraping/](https://blog.rsquaredacademy.com/2019/04/11/web-scraping/).
+- Wikipedia (2020). "Web scraping." [https://en.wikipedia.org/wiki/Web_scraping](https://en.wikipedia.org/wiki/Web_scraping).
