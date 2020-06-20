@@ -3,33 +3,24 @@ title: "Web Scraping in R"
 subtitle: ""  
 author: 
   - "Dr. Matthew Hendrickson"
-date: '`r Sys.Date()`'
+date: "July 9, 2020"
 output:
-  xaringan::moon_reader:
-    lib_dir: libs
-    css: xaringan-themer.css
-    nature:
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
+  revealjs::revealjs_presentation:
+    theme: night
+    center: true
+    widescreen: true
+    incremental: true
+    fig_width: 9
+    fig_height: 3
+    df_print: paged
 ---
 
-```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE, echo = FALSE, warning=FALSE)
+```{r setup, include=FALSE, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE, comment = "#>", collapse = TRUE)
 library(tidyverse)
 library(robotstxt)
 library(rvest)
 ```
-
-```{r xaringan-themer, include=FALSE, warning=FALSE}
-library(xaringanthemer)
-style_duo_accent_inverse(
-  primary_color = "#035AA6",
-  secondary_color = "#03A696"
-)
-```
-
-name: fix
 
 # ITEMS TO FIX:
 
@@ -40,13 +31,13 @@ name: fix
 5. A Little About Web Scraping
 6. Multiple format & price entries
 
----
 
-name: topics
+
+
 
 # Topics
 
-### Ensure these are updated
+Ensure these are updated
 
 1. About Me
 2. A Little About Web Scraping
@@ -59,11 +50,18 @@ name: topics
 9. Assembling the Data
 10. References & Resources
 
----
 
-name: about_me
+
+
 
 # About Me
+
+<div style="float: left; width: 50%;">
+<img src = "images/headshot.png" width="450" height="450">
+</div>
+
+<div style="float: left; width: 50%;">
+</br>
 
 - Social Scientist by Training
      - Psychology & Music `%>%`
@@ -72,37 +70,38 @@ name: about_me
 - Higher Education Analyst by Trade
 - Independent Consultant
 - 13 years in analytics
+</div>
 
----
 
-name: web_scraping_intro
+
+
 
 # A Little About Web Scraping
 
 "Web scraping is the process of automatically mining data or collecting information from the World Wide Web." -- Wikipedia
 
-1. Purpose
+## Purpose
 
 Web scraping is a flexible method to extract data from the internet. It can involve extracting numerical or text data.
 
-2. Use Cases
+## Use Cases
 
-There are many uses for web scraping, inlcuding but not limited it:
+There are many uses for web scraping, including but not limited it:
    a. Price monitoring
    b. Sentiment analysis
    c. Time series tracking and analysis
 
-3. Robots File
+## Robots File
 
 Always ensure - PRIOR to scraping - that you have rights to scrape the website. This is critical as you can be blocked from sites or even face legal action. This can easily be accomplished with the `robotstxt` package.
 
----
 
-name: robots_txt
+
+
 
 # Robots.txt
 
-##### Always ensure you check the robots.txt file! This assures you are not breaking the terms of service by scraping the site.
+Always ensure you check the robots.txt file! This assures you are not breaking the terms of service by scraping the site.
 
 ```{r robots, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 paths_allowed(paths = c("https://netflix.com/"))
@@ -110,31 +109,25 @@ paths_allowed(paths = c("https://netflix.com/"))
 
 This example shows that Netflix does not allow you to scrape their site.
 
----
 
-name: html_structure
-class: inverse, center, middle
 
-# HTML
 
-### Basic Structure
 
----
+# HTML Structure
 
-name: html_diagram
-class: inverse, center, middle
+<img src = "images/html-structure.png">
 
-background-image: url(web-scraping-with-r_files/html-structure.png)
+<p style = "font-size:65%;">Image credit: [Professor Shawn Santo](http://www2.stat.duke.edu/~fl35/teaching/440-19F/decks/webscraping2.html#3)</p>
 
-???
 
-Image credit: [Professor Shawn Santo](http://www2.stat.duke.edu/~fl35/teaching/440-19F/decks/webscraping2.html#3)
 
----
 
-name: selector_gadget
 
 # A Little Help with CSS
+
+"HTML is the standard markup language for creating Web pages." -- W3Schools
+
+"CSS describes how HTML elements are to be displayed on screen, paper, or in other media." -- W3Schools
 
 If you aren't familiar with CSS, extracting parts of a website can be daunting.
 
@@ -145,25 +138,43 @@ SelectorGadget is incredibly helpful for this purpose.
 * This is a Chrome only extension. Another option is to inspect the page elements.
 
 
----
 
-name: scraping_header
-class: inverse, center, middle
+
+
+# HTML Tags
+
+HTML is strucutred with "tags." These tags indicate portions of the page and can be called by their structure.
+
+There are many types of tags - here are some important ones for scraping:
+* `<h1>` - header tags
+* `<p>` - paragraph elements
+* `<ul>` - unordered bulleted list
+* `<ol>` - ordered list
+* `<li>` - individual list item
+* `<div>` - division
+* `<table>` - table
+
+
+
+
 
 # Web Scraping
 
----
 
-name: scraping_methods
+
+
 
 # Scraping Methods
 
-1. HTML
-2. XPATH
+HTML - syntax is easier and aligns with HTML tags
 
----
+XPATH - useful when the node isn't uniquely identified with CSS
 
-name: setup
+
+
+
+
+# The Setup
 
 Set up the environment to scrap the site.
 
@@ -175,40 +186,42 @@ library(rvest)
 
 That's it! These are all the tools you'll need.
 
----
 
-name: scraping_robots
+
+
 
 # Determine a website to scrape
 
-### It only seems appropriate to pull data from Amazon regarding R books
+It only seems appropriate to pull data from Amazon regarding R books
 
-##### Ensure we can scrape the site
+Ensure we can scrape the site
 
 ```{r robots_amazon, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 paths_allowed(paths = c("https://amazon.com/"))
 ```
 
+
+
 We are good to scrape!
 
----
 
-name: scraping_amazon_url
+
+
 
 # Setting the URLs
 
-### Before you can get started, you must specific the URLs to pass to the function.
+Before you can get started, you must specific the URLs to pass to the function.
 
 ```{r amazon_html, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&qid=1592086532&rnid=1000&ref=sr_nr_n_1")
 # amazon_pg_2 <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&page=2&qid=1592086539&rnid=1000&ref=sr_pg_2")
 ```
 
----
 
-name: scraping_amazon_titles
 
-### Scraping Book Titles
+
+
+# Scraping Book Titles
 
 ```{r amazon_title, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -223,9 +236,7 @@ Let's clean this up with `str_trim`.
 
 ---
 
-name: scraping_amazon_titles_clean
-
-### The titles have a great deal of white space and breaks (\n), these need to be removed
+# The titles have a great deal of white space and breaks (\n), these need to be removed
 
 ```{r amazon_title_clean, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_titles <- str_trim(amazon_titles) # Removes leading & training space
@@ -238,8 +249,6 @@ Unfortunately, there are mutilple formats and prices for each title. Here's we'l
 
 ---
 
-name: scraping_amazon_titles_duplicate
-
 ```{r amazon_title_duplicate, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 #amazon_titles %>% 
   #append(values = NA, after = 1) -> amazon_titles
@@ -248,11 +257,11 @@ name: scraping_amazon_titles_duplicate
 
 This structure will serve our needs for future steps.
 
----
 
-name: scraping_amazon_author
 
-### Get the book author(s)
+
+
+# Get the book author(s)
 
 ```{r amazon_author, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -267,11 +276,11 @@ We run into issues here due to the element in which authors are placed.
 
 We also need to split the author fields.
 
----
 
-name: scraping_amazon_format
 
-### Get the book format
+
+
+# Get the book format
 
 ```{r format, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -281,11 +290,11 @@ amazon %>%
 head(amazon_format)
 ```
 
----
 
-name: scraping_amazon_price
 
-### Get the book price
+
+
+# Get the book price
 
 ```{r price_whole, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -296,7 +305,7 @@ head(amazon_price_whole)
 
 The price structure splits price into two elements. We must pull each and combine them into a single price.
 
-##### Get (the rest of) the book price
+# Get (the rest of) the book price
 
 ```{r price_fraction, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -305,18 +314,18 @@ amazon %>%
 head(amazon_price_fraction)
 ```
 
-##### Combine price portions
+# Combine price portions
 
 ```{r price_total, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_price <- as.numeric(paste(amazon_price_whole, amazon_price_fraction, sep = ""))
 head(amazon_price)
 ```
 
----
 
-name: scraping_amazon_rating
 
-### Get the book rating
+
+
+# Get the book rating
 
 ```{r rate, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -332,10 +341,6 @@ amazon_rating <- as.numeric(substr(amazon_rating, 1, 3))
 head(amazon_rating)
 ```
 
----
-
-name: scraping_amazon_rating_missing
-
 Another issue with ratings is that not all titles have ratings. We must adjust for this.
 
 I'll do this manually by appending NA where ratings are missing.
@@ -347,11 +352,11 @@ amazon_rating %>%
 head(amazon_rating)
 ```
 
----
 
-name: scraping_amazon_num_ratings
 
-### Get the book rating count
+
+
+# Get the book rating count
 
 We'll run into the same issue as the actual rating. But first, we'll also see a number of cleaning steps are needed.
 
@@ -368,10 +373,6 @@ amazon_rate_n <- as.numeric(amazon_rate_n)
 head(amazon_rate_n)
 ```
 
----
-
-name: scraping_amazon_num_ratings_missing
-
 ```{r rate_n_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rate_n %>% 
   append(values = NA, after = 1) %>% 
@@ -379,10 +380,11 @@ amazon_rate_n %>%
 head(amazon_rate_n)
 ```
 
----
-name: scraping_amazon_pub_date
 
-### Get the book publication date
+
+
+
+# Get the book publication date
 
 ```{r pub_dt, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -398,15 +400,13 @@ amazon_pub_dt <- as.Date(amazon_pub_dt, "%b %d, %Y")
 head(amazon_pub_dt)
 ```
 
----
 
-name: assemble_data
+
+
 
 # We Have the Pieces
 
-### Let's assemble the file
-
----
+Let's assemble the file
 
 ### Assemble the data
 
@@ -421,13 +421,38 @@ name: assemble_data
 #head(r_books)
 ```
 
----
 
-name: references
 
-- Dataquest (unknown). "Tutorial: Web Scraping in R with rvest." [https://www.dataquest.io/blog/web-scraping-in-r-rvest/](https://www.dataquest.io/blog/web-scraping-in-r-rvest/).
+
+
+# Thank you
+<img src = "images/twitter.png" width="30" height="30">  
+[\@mjhendrickson](https://twitter.com/mjhendrickson)
+
+<img src = "images/linkedin.png" width="30" height="30">  
+[matthewjhendrickson](https://www.linkedin.com/in/matthewjhendrickson/)
+
+<img src = "images/github.png" width="30" height="30">  
+[mjhendrickson](https://github.com/mjhendrickson)
+
+[rtweet repo](https://github.com/mjhendrickson/rtweet-Exploration)
+
+This talk is freely distributed under the MIT License.  
+(So is rtweet!)
+
+
+
+
+
+# References
+
+- Bauer V (2016). "Introduction to Web Scraping in R: Very Applied Methods Workgoup." [https://stanford.edu/~vbauer/files/teaching/VAMScrapingSlides.html](https://stanford.edu/~vbauer/files/teaching/VAMScrapingSlides.html).
+- University of Cincinnati (2018). "UC Business Analytics R Programming Guide." Specifically the portion of scraping. [https://uc-r.github.io/](https://uc-r.github.io/).
+- Dataquest (no date). "Tutorial: Web Scraping in R with rvest." [https://www.dataquest.io/blog/web-scraping-in-r-rvest/](https://www.dataquest.io/blog/web-scraping-in-r-rvest/).
 - Im J (2019). "Web Scraping Product Data in R with rvest and purrr." [https://www.business-science.io/code-tools/2019/10/07/rvest-web-scraping.html](https://www.business-science.io/code-tools/2019/10/07/rvest-web-scraping.html).
 - Kaushik S (2017). "Beginner's Guide on Web Scraping in R (using rvest) with hands-on example." [https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/](https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/).
 - Perceptive Analytics on KDnuggets (2018). "A Primer on Web Scraping in R." [https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html](https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html).
 - Rsquared Academy (2019). "Practical Introduction to Web Scraping in R." [https://blog.rsquaredacademy.com/2019/04/11/web-scraping/](https://blog.rsquaredacademy.com/2019/04/11/web-scraping/).
+- W3Schools (no date). "CSS Introduction." [https://www.w3schools.com/css/css_intro.asp](https://www.w3schools.com/css/css_intro.asp).
+- W3Schools (no date). "HTML Introduction." [https://www.w3schools.com/html/html_intro.asp](https://www.w3schools.com/html/html_intro.asp).
 - Wikipedia (2020). "Web scraping." [https://en.wikipedia.org/wiki/Web_scraping](https://en.wikipedia.org/wiki/Web_scraping).
