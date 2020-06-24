@@ -23,3 +23,10 @@ There are a few ways to select elements from a webpage.
 1. Viewing the page source, which is not user friendly.
 2. Inspecting the page via Chrome, though this may not be available for other browsers.
 3. Selector Gadget (<https://selectorgadget.com/>), which allows point and click selection of elements.
+
+## Presentation
+This project was undertaken to present Web Scraping in R.
+
+The .html files do not render directly as a true .html file in GitHub. GitHub & BitBucket HTML Preview works well to convert these .html files into viewable webpages. Try it here https://htmlpreview.github.io/.
+
+The presentation (work-in-progress) [can be accessed here](https://htmlpreview.github.io/?https://github.com/mjhendrickson/Web-Scraping-with-R/blob/master/web-scraping-with-r.html#/).
