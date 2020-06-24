@@ -1838,10 +1838,8 @@ document.getElementsByTagName('head')[0].appendChild(style);
 </section>
 
 <section id="items-to-fix" class="title-slide slide level1"><h1>ITEMS TO FIX:</h1><ol type="1">
-<li class="fragment">Author</li>
-<li class="fragment">Scraping Methods</li>
-<li class="fragment">Data Assembly</li>
-<li class="fragment">All elements - ueven number of records</li>
+<li class="fragment">Author - may not be possible without JS or Selenium</li>
+<li class="fragment">Data Assembly - uneven number of records</li>
 </ol></section>
 <section id="topics" class="title-slide slide level1"><h1>Topics</h1><p>Ensure these are updated</p>
 <ol type="1">
@@ -1946,8 +1944,8 @@ Image credit: <a href="http://www2.stat.duke.edu/~fl35/teaching/440-19F/decks/we
 <span id="cb5-6"><a href="#cb5-6"></a><span class="co">#&gt; [2] &quot;\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                The Book of R: A First Course in Programming and Statistics\n            \n        \n        \n    \n\n\n    \n&quot;                                         </span></span>
 <span id="cb5-7"><a href="#cb5-7"></a><span class="co">#&gt; [3] &quot;\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                R Graphics Cookbook: Practical Recipes for Visualizing Data\n            \n        \n        \n    \n\n\n    \n&quot;                                         </span></span>
 <span id="cb5-8"><a href="#cb5-8"></a><span class="co">#&gt; [4] &quot;\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                Interactive Web-Based Data Visualization with R, plotly, and shiny (Chapman &amp; Hall/CRC The R Series)\n            \n        \n        \n    \n\n\n    \n&quot;</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a><span class="co">#&gt; [5] &quot;\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                Discovering Statistics Using R\n            \n        \n        \n    \n\n\n    \n&quot;                                                                      </span></span>
-<span id="cb5-10"><a href="#cb5-10"></a><span class="co">#&gt; [6] &quot;\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                Advanced R, Second Edition (Chapman &amp; Hall/CRC The R Series)\n            \n        \n        \n    \n\n\n    \n&quot;</span></span></code></pre></div>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co">#&gt; [5] &quot;\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                Statistics With R: Solving Problems Using Real-World Data\n            \n        \n        \n    \n\n\n    \n&quot;                                           </span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="co">#&gt; [6] &quot;\n    \n    \n        \n\n\n\n\n\n    \n        \n            \n                Discovering Statistics Using R\n            \n        \n        \n    \n\n\n    \n&quot;</span></span></code></pre></div>
 <p>The element pulls a number of breaks and blank spaces.</p>
 <p>Let’s clean this up with <code>str_trim</code>.</p></section><section id="the-titles-have-a-great-deal-of-white-space-and-breaks-n-these-need-to-be-removed" class="slide level2">
 <h2>The titles have a great deal of white space and breaks (<code>\n</code>), these need to be removed</h2>
@@ -1957,125 +1955,183 @@ Image credit: <a href="http://www2.stat.duke.edu/~fl35/teaching/440-19F/decks/we
 <span id="cb6-4"><a href="#cb6-4"></a><span class="co">#&gt; [2] &quot;The Book of R: A First Course in Programming and Statistics&quot;                                         </span></span>
 <span id="cb6-5"><a href="#cb6-5"></a><span class="co">#&gt; [3] &quot;R Graphics Cookbook: Practical Recipes for Visualizing Data&quot;                                         </span></span>
 <span id="cb6-6"><a href="#cb6-6"></a><span class="co">#&gt; [4] &quot;Interactive Web-Based Data Visualization with R, plotly, and shiny (Chapman &amp; Hall/CRC The R Series)&quot;</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="co">#&gt; [5] &quot;Discovering Statistics Using R&quot;                                                                      </span></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="co">#&gt; [6] &quot;Advanced R, Second Edition (Chapman &amp; Hall/CRC The R Series)&quot;</span></span></code></pre></div>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co">#&gt; [5] &quot;Statistics With R: Solving Problems Using Real-World Data&quot;                                           </span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="co">#&gt; [6] &quot;Discovering Statistics Using R&quot;</span></span></code></pre></div>
 <p>This simple function returns cleaned text.</p>
-<p>Unfortunately, there are multiple formats and prices for each title. Here’s we’ll create additional title records for creating the dataset.</p>
-</section><section class="slide level2">
-
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">#amazon_titles %&gt;% </span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>  <span class="co">#append(values = NA, after = 1) -&gt; amazon_titles</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="co">#head(amazon_titles)</span></span></code></pre></div>
-<p>This structure will serve our needs for future steps.</p>
 </section></section>
-<section><section id="get-the-book-authors" class="title-slide slide level1"><h1>Get the book author(s)</h1><div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="co">#  html_nodes(&quot;a.a-size-base.a-link-normal&quot;) %&gt;% </span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;div.a-row.a-size-base.a-color-secondary&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="st">  </span><span class="kw">html_text</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="st">  </span><span class="kw">str_trim</span>() -&gt;<span class="st"> </span>amazon_authors</span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="kw">head</span>(amazon_authors)</span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; [1] &quot;by \n\n\n\n\n\n    \n        \n        \n            Hadley Wickham\n        \n    \n\n and \n\n\n\n\n\n    \n        \n        \n            Garrett Grolemund\n        \n    \n\n | Jan 10, 2017&quot;</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt; [2] &quot;Get 3 for the price of 2&quot;                                                                                                                                                                          </span></span>
-<span id="cb8-9"><a href="#cb8-9"></a><span class="co">#&gt; [3] &quot;Get it as soon as Mon, Jun 22\n\n\n\n\n\n    FREE Shipping by Amazon&quot;                                                                                                                              </span></span>
-<span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt; [4] &quot;More Buying Choices$30.00\n\n\n\n\n\n    \n        \n        \n            (40 used &amp; new offers)&quot;                                                                                                 </span></span>
-<span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt; [5] &quot;by Tilman M. Davies | Jul 16, 2016&quot;                                                                                                                                                                </span></span>
-<span id="cb8-12"><a href="#cb8-12"></a><span class="co">#&gt; [6] &quot;Get it as soon as Mon, Jun 22\n\n\n\n\n\n    FREE Shipping by Amazon&quot;</span></span></code></pre></div>
+<section><section id="get-the-book-authors" class="title-slide slide level1"><h1>Get the book author(s)</h1><div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="co">#  html_nodes(&quot;a.a-size-base.a-link-normal&quot;) %&gt;% </span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co">#  html_nodes(&quot;div.a-row.a-size-base.a-color-secondary&quot;) %&gt;% </span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">html_nodes</span>(<span class="dt">xpath =</span> <span class="st">&#39;//*[@id=&quot;search&quot;]/div[1]/div[2]/div/span[3]/div[2]/div[3]/div/span/div/div/div[2]/div[2]/div/div[1]/div/div/div[1]/div/a[1]&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="st">  </span><span class="kw">html_text</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="st">  </span><span class="kw">str_trim</span>() -&gt;<span class="st"> </span>amazon_authors</span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="kw">head</span>(amazon_authors)</span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="co">#&gt; character(0)</span></span></code></pre></div>
 <p>We run into issues due to the element in which authors are placed.</p>
 <p>We also need to split the author fields.</p></section><section id="splitting-the-author-field" class="slide level2">
 <h2>Splitting the Author Field</h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co">#amazon %&gt;% </span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="co">#  html_nodes(&quot;a.a-size-base.a-link-normal&quot;) %&gt;% </span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="co">#  html_nodes(&quot;div.a-row.a-size-base.a-color-secondary&quot;) %&gt;% </span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="co">#  html_text() %&gt;% </span></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="co">#  str_trim() -&gt; amazon_authors</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="co">#head(amazon_authors)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">#amazon %&gt;% </span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="co">#  html_nodes(&quot;a.a-size-base.a-link-normal&quot;) %&gt;% </span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co">#  html_nodes(&quot;div.a-row.a-size-base.a-color-secondary&quot;) %&gt;% </span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co">#  html_text() %&gt;% </span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co">#  str_trim() -&gt; amazon_authors</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#head(amazon_authors)</span></span></code></pre></div>
 </section></section>
-<section id="get-the-book-format" class="title-slide slide level1"><h1>Get the book format</h1><div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;a.a-size-base.a-link-normal.a-text-bold&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="st">  </span><span class="kw">html_text</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb10-4"><a href="#cb10-4"></a><span class="st">  </span><span class="kw">str_trim</span>() -&gt;<span class="st"> </span>amazon_format</span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="kw">head</span>(amazon_format)</span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="co">#&gt; [1] &quot;Paperback&quot; &quot;Kindle&quot;    &quot;Paperback&quot; &quot;eTextbook&quot; &quot;Paperback&quot; &quot;Kindle&quot;</span></span></code></pre></div></section>
-<section><section id="get-the-book-price" class="title-slide slide level1"><h1>Get the book price</h1><div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;.a-price-whole&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb11-3"><a href="#cb11-3"></a><span class="st">  </span><span class="kw">html_text</span>() -&gt;<span class="st"> </span>amazon_price_whole</span>
-<span id="cb11-4"><a href="#cb11-4"></a><span class="kw">head</span>(amazon_price_whole)</span>
-<span id="cb11-5"><a href="#cb11-5"></a><span class="co">#&gt; [1] &quot;39.&quot; &quot;24.&quot; &quot;33.&quot; &quot;29.&quot; &quot;23.&quot; &quot;11.&quot;</span></span></code></pre></div>
+<section id="get-the-book-format" class="title-slide slide level1"><h1>Get the book format</h1><div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;a.a-size-base.a-link-normal.a-text-bold&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="st">  </span><span class="kw">html_text</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="st">  </span><span class="kw">str_trim</span>() -&gt;<span class="st"> </span>amazon_format</span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="kw">head</span>(amazon_format)</span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="co">#&gt; [1] &quot;Paperback&quot; &quot;Kindle&quot;    &quot;Paperback&quot; &quot;eTextbook&quot; &quot;Paperback&quot; &quot;Kindle&quot;</span></span></code></pre></div></section>
+<section><section id="get-the-book-price" class="title-slide slide level1"><h1>Get the book price</h1><div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;.a-price-whole&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="st">  </span><span class="kw">html_text</span>() -&gt;<span class="st"> </span>amazon_price_whole</span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="kw">head</span>(amazon_price_whole)</span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="co">#&gt; [1] &quot;39.&quot; &quot;24.&quot; &quot;33.&quot; &quot;29.&quot; &quot;23.&quot; &quot;11.&quot;</span></span></code></pre></div>
 <p>The price structure splits price into two elements. We must pull each and combine them into a single price.</p></section><section id="get-the-rest-of-the-book-price" class="slide level2">
 <h2>Get (the rest of) the book price</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;.a-price-fraction&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="st">  </span><span class="kw">html_text</span>() -&gt;<span class="st"> </span>amazon_price_fraction</span>
-<span id="cb12-4"><a href="#cb12-4"></a><span class="kw">head</span>(amazon_price_fraction)</span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="co">#&gt; [1] &quot;49&quot; &quot;99&quot; &quot;04&quot; &quot;99&quot; &quot;93&quot; &quot;30&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;.a-price-fraction&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="st">  </span><span class="kw">html_text</span>() -&gt;<span class="st"> </span>amazon_price_fraction</span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="kw">head</span>(amazon_price_fraction)</span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="co">#&gt; [1] &quot;49&quot; &quot;99&quot; &quot;04&quot; &quot;99&quot; &quot;93&quot; &quot;30&quot;</span></span></code></pre></div>
 </section><section id="combine-price-portions" class="slide level2">
 <h2>Combine price portions</h2>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>amazon_price &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">paste</span>(amazon_price_whole, amazon_price_fraction, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))</span>
-<span id="cb13-2"><a href="#cb13-2"></a><span class="kw">head</span>(amazon_price)</span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="co">#&gt; [1] 39.49 24.99 33.04 29.99 23.93 11.30</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>amazon_price &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">paste</span>(amazon_price_whole, amazon_price_fraction, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="kw">head</span>(amazon_price)</span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="co">#&gt; [1] 39.49 24.99 33.04 29.99 23.93 11.30</span></span></code></pre></div>
 </section></section>
-<section><section id="get-the-book-rating" class="title-slide slide level1"><h1>Get the book rating</h1><div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb14-2"><a href="#cb14-2"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;i.a-icon.a-icon-star-small.a-star-small-4-5.aok-align-bottom&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb14-3"><a href="#cb14-3"></a><span class="st">  </span><span class="kw">html_text</span>() -&gt;<span class="st"> </span>amazon_rating</span>
-<span id="cb14-4"><a href="#cb14-4"></a><span class="kw">head</span>(amazon_rating)</span>
-<span id="cb14-5"><a href="#cb14-5"></a><span class="co">#&gt; [1] &quot;4.7 out of 5 stars&quot; &quot;4.3 out of 5 stars&quot; &quot;4.7 out of 5 stars&quot;</span></span>
-<span id="cb14-6"><a href="#cb14-6"></a><span class="co">#&gt; [4] &quot;4.5 out of 5 stars&quot; &quot;4.7 out of 5 stars&quot; &quot;4.4 out of 5 stars&quot;</span></span></code></pre></div></section><section id="lets-trim-this-into-a-usable-metric." class="slide level2">
-<h2>Let’s trim this into a usable metric.</h2>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>amazon_rating &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">substr</span>(amazon_rating, <span class="dv">1</span>, <span class="dv">3</span>))</span>
-<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">head</span>(amazon_rating)</span>
-<span id="cb15-3"><a href="#cb15-3"></a><span class="co">#&gt; [1] 4.7 4.3 4.7 4.5 4.7 4.4</span></span></code></pre></div>
-</section><section id="another-issue-with-ratings-is-that-not-all-titles-have-ratings.-we-must-adjust-for-this." class="slide level2">
-<h2>Another issue with ratings is that not all titles have ratings. We must adjust for this.</h2>
-<p>I’ll do this manually by appending NA where ratings are missing.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>amazon_rating <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="st">  </span><span class="kw">append</span>(<span class="dt">values =</span> <span class="ot">NA</span>, <span class="dt">after =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-3"><a href="#cb16-3"></a><span class="st">  </span><span class="kw">append</span>(<span class="dt">values =</span> <span class="ot">NA</span>, <span class="dt">after =</span> <span class="dv">11</span>) -&gt;<span class="st"> </span>amazon_rating</span>
-<span id="cb16-4"><a href="#cb16-4"></a><span class="kw">head</span>(amazon_rating)</span>
-<span id="cb16-5"><a href="#cb16-5"></a><span class="co">#&gt; [1] 4.7  NA 4.3 4.7 4.5 4.7</span></span></code></pre></div>
+<section><section id="get-the-book-rating" class="title-slide slide level1"><h1>Get the book rating</h1><div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;i.a-icon.a-icon-star-small.a-star-small-4-5.aok-align-bottom&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="st">  </span><span class="kw">html_text</span>() -&gt;<span class="st"> </span>amazon_rating</span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="kw">head</span>(amazon_rating)</span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="co">#&gt; [1] &quot;4.7 out of 5 stars&quot; &quot;4.3 out of 5 stars&quot; &quot;4.7 out of 5 stars&quot;</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="co">#&gt; [4] &quot;4.5 out of 5 stars&quot; &quot;4.3 out of 5 stars&quot; &quot;4.7 out of 5 stars&quot;</span></span></code></pre></div></section><section id="lets-trim-this-into-a-usable-metric" class="slide level2">
+<h2>Let’s trim this into a usable metric</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>amazon_rating &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">substr</span>(amazon_rating, <span class="dv">1</span>, <span class="dv">3</span>))</span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="kw">head</span>(amazon_rating)</span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="co">#&gt; [1] 4.7 4.3 4.7 4.5 4.3 4.7</span></span></code></pre></div>
 </section></section>
-<section><section id="get-the-book-rating-count" class="title-slide slide level1"><h1>Get the book rating count</h1><p>We’ll run into the same issue as the actual rating. But first, we’ll also see a number of cleaning steps are needed.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb17-2"><a href="#cb17-2"></a><span class="co">#  html_nodes(&quot;span.a-size-base&quot;) %&gt;% </span></span>
-<span id="cb17-3"><a href="#cb17-3"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;div.a-row.a-size-small&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb17-4"><a href="#cb17-4"></a><span class="st">  </span><span class="kw">html_text</span>() -&gt;<span class="st"> </span>amazon_rate_n</span>
-<span id="cb17-5"><a href="#cb17-5"></a>amazon_rate_n &lt;-<span class="st"> </span><span class="kw">str_trim</span>(amazon_rate_n) <span class="co"># trim</span></span>
-<span id="cb17-6"><a href="#cb17-6"></a><span class="co">#amazon_rate_n &lt;- str_sub(amazon_rate_n, regex(?&lt;=\s))</span></span>
-<span id="cb17-7"><a href="#cb17-7"></a>amazon_rate_n &lt;-<span class="st"> </span><span class="kw">str_sub</span>(amazon_rate_n, <span class="dv">-5</span>) <span class="co"># keep last 5 characters</span></span>
-<span id="cb17-8"><a href="#cb17-8"></a>amazon_rate_n &lt;-<span class="st"> </span><span class="kw">str_trim</span>(amazon_rate_n) <span class="co"># trim leading spaces</span></span>
-<span id="cb17-9"><a href="#cb17-9"></a>amazon_rate_n &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(amazon_rate_n)</span>
-<span id="cb17-10"><a href="#cb17-10"></a><span class="kw">head</span>(amazon_rate_n)</span>
-<span id="cb17-11"><a href="#cb17-11"></a><span class="co">#&gt; [1] 423  75  14 255  31 550</span></span></code></pre></div></section><section id="not-all-titles-have-rating-counts" class="slide level2">
-<h2>Not all titles have rating counts</h2>
-<p>We must adjust for this. I’ll do this manually by appending NA where rating counts are missing.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>amazon_rate_n <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb18-2"><a href="#cb18-2"></a><span class="st">  </span><span class="kw">append</span>(<span class="dt">values =</span> <span class="ot">NA</span>, <span class="dt">after =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb18-3"><a href="#cb18-3"></a><span class="st">  </span><span class="kw">append</span>(<span class="dt">values =</span> <span class="ot">NA</span>, <span class="dt">after =</span> <span class="dv">11</span>) -&gt;<span class="st"> </span>amazon_rate_n</span>
-<span id="cb18-4"><a href="#cb18-4"></a><span class="kw">head</span>(amazon_rate_n)</span>
-<span id="cb18-5"><a href="#cb18-5"></a><span class="co">#&gt; [1] 423  NA  75  14 255  31</span></span></code></pre></div>
+<section id="get-the-book-rating-count" class="title-slide slide level1"><h1>Get the book rating count</h1><p>We’ll run into the same issue as the actual rating. But first, we’ll also see a number of cleaning steps are needed.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="co">#  html_nodes(&quot;span.a-size-base&quot;) %&gt;% </span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;div.a-row.a-size-small&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="st">  </span><span class="kw">html_text</span>() -&gt;<span class="st"> </span>amazon_rate_n</span>
+<span id="cb15-5"><a href="#cb15-5"></a>amazon_rate_n &lt;-<span class="st"> </span><span class="kw">str_trim</span>(amazon_rate_n) <span class="co"># trim</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="co">#amazon_rate_n &lt;- str_sub(amazon_rate_n, regex(?&lt;=\s))</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a>amazon_rate_n &lt;-<span class="st"> </span><span class="kw">str_sub</span>(amazon_rate_n, <span class="dv">-5</span>) <span class="co"># keep last 5 characters</span></span>
+<span id="cb15-8"><a href="#cb15-8"></a>amazon_rate_n &lt;-<span class="st"> </span><span class="kw">str_trim</span>(amazon_rate_n) <span class="co"># trim leading spaces</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a>amazon_rate_n &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(amazon_rate_n)</span>
+<span id="cb15-10"><a href="#cb15-10"></a><span class="kw">head</span>(amazon_rate_n)</span>
+<span id="cb15-11"><a href="#cb15-11"></a><span class="co">#&gt; [1] 424  75  14 255  31  49</span></span></code></pre></div></section>
+<section><section id="get-the-book-publication-date" class="title-slide slide level1"><h1>Get the book publication date</h1><div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;span.a-size-base.a-color-secondary.a-text-normal&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="st">  </span><span class="kw">html_text</span>() -&gt;<span class="st"> </span>amazon_pub_dt</span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="kw">head</span>(amazon_pub_dt)</span>
+<span id="cb16-5"><a href="#cb16-5"></a><span class="co">#&gt; [1] &quot;Jan 10, 2017&quot; &quot;Jul 16, 2016&quot; &quot;Nov 30, 2018&quot; &quot;Jan 21, 2020&quot; &quot;Jan 27, 2020&quot;</span></span>
+<span id="cb16-6"><a href="#cb16-6"></a><span class="co">#&gt; [6] &quot;Apr 5, 2012&quot;</span></span></code></pre></div></section><section id="we-need-to-convert-this-to-a-date-to-allow-easier-analysis" class="slide level2">
+<h2>We need to convert this to a date to allow easier analysis</h2>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>amazon_pub_dt &lt;-<span class="st"> </span><span class="kw">as.Date</span>(amazon_pub_dt, <span class="st">&quot;%b %d, %Y&quot;</span>)</span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="kw">head</span>(amazon_pub_dt)</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="co">#&gt; [1] &quot;2017-01-10&quot; &quot;2016-07-16&quot; &quot;2018-11-30&quot; &quot;2020-01-21&quot; &quot;2020-01-27&quot;</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="co">#&gt; [6] &quot;2012-04-05&quot;</span></span></code></pre></div>
 </section></section>
-<section><section id="get-the-book-publication-date" class="title-slide slide level1"><h1>Get the book publication date</h1><div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>amazon <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb19-2"><a href="#cb19-2"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;span.a-size-base.a-color-secondary.a-text-normal&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb19-3"><a href="#cb19-3"></a><span class="st">  </span><span class="kw">html_text</span>() -&gt;<span class="st"> </span>amazon_pub_dt</span>
-<span id="cb19-4"><a href="#cb19-4"></a><span class="kw">head</span>(amazon_pub_dt)</span>
-<span id="cb19-5"><a href="#cb19-5"></a><span class="co">#&gt; [1] &quot;Jan 10, 2017&quot; &quot;Jul 16, 2016&quot; &quot;Nov 30, 2018&quot; &quot;Jan 21, 2020&quot; &quot;Apr 5, 2012&quot; </span></span>
-<span id="cb19-6"><a href="#cb19-6"></a><span class="co">#&gt; [6] &quot;May 30, 2019&quot;</span></span></code></pre></div></section><section id="we-need-to-convert-this-to-a-date-to-allow-easier-analysis." class="slide level2">
-<h2>We need to convert this to a date to allow easier analysis.</h2>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>amazon_pub_dt &lt;-<span class="st"> </span><span class="kw">as.Date</span>(amazon_pub_dt, <span class="st">&quot;%b %d, %Y&quot;</span>)</span>
-<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">head</span>(amazon_pub_dt)</span>
-<span id="cb20-3"><a href="#cb20-3"></a><span class="co">#&gt; [1] &quot;2017-01-10&quot; &quot;2016-07-16&quot; &quot;2018-11-30&quot; &quot;2020-01-21&quot; &quot;2012-04-05&quot;</span></span>
-<span id="cb20-4"><a href="#cb20-4"></a><span class="co">#&gt; [6] &quot;2019-05-30&quot;</span></span></code></pre></div>
+<section><section id="we-have-the-pieces" class="title-slide slide level1"><h1>We Have the Pieces</h1><p>Let’s assemble the file!</p>
+<ol type="1">
+<li class="fragment">Titles</li>
+<li class="fragment">Authors</li>
+<li class="fragment">Formats</li>
+<li class="fragment">Prices</li>
+<li class="fragment">Ratings</li>
+<li class="fragment">Rating Counts</li>
+<li class="fragment">Publication Date</li>
+</ol></section><section id="lets-check-the-scrapes" class="slide level2">
+<h2>Let’s Check the Scrapes</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">length</span>(amazon_titles)</span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="co">#&gt; [1] 18</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="kw">length</span>(amazon_authors)</span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="co">#&gt; [1] 0</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="kw">length</span>(amazon_format)</span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="co">#&gt; [1] 37</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="kw">length</span>(amazon_price)</span>
+<span id="cb18-8"><a href="#cb18-8"></a><span class="co">#&gt; [1] 37</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="kw">length</span>(amazon_rating)</span>
+<span id="cb18-10"><a href="#cb18-10"></a><span class="co">#&gt; [1] 10</span></span>
+<span id="cb18-11"><a href="#cb18-11"></a><span class="kw">length</span>(amazon_rate_n)</span>
+<span id="cb18-12"><a href="#cb18-12"></a><span class="co">#&gt; [1] 15</span></span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="kw">length</span>(amazon_pub_dt)</span>
+<span id="cb18-14"><a href="#cb18-14"></a><span class="co">#&gt; [1] 18</span></span></code></pre></div>
+</section><section id="wait-what" class="slide level2">
+<h2>Wait! What?!?</h2>
+<p>An issue with scraping is sometimes you get an uneven number of records due to missing data elements.</p>
+<p>We can fix this (manually)!</p>
 </section></section>
-<section><section id="we-have-the-pieces" class="title-slide slide level1"><h1>We Have the Pieces</h1><p>Let’s assemble the file!</p></section><section id="assemble-the-data" class="slide level3">
-<h3>Assemble the data</h3>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="co">#r_books &lt;- tibble(title = amazon_titles,</span></span>
-<span id="cb21-2"><a href="#cb21-2"></a><span class="co">#                  author = amazon_authors,</span></span>
-<span id="cb21-3"><a href="#cb21-3"></a><span class="co">#                  text.format = amazon_format,</span></span>
-<span id="cb21-4"><a href="#cb21-4"></a><span class="co">#                  price = amazon_price,</span></span>
-<span id="cb21-5"><a href="#cb21-5"></a><span class="co">#                  rating = amazon_rating,</span></span>
-<span id="cb21-6"><a href="#cb21-6"></a><span class="co">#                  num.ratings = amazon_rate_n,</span></span>
-<span id="cb21-7"><a href="#cb21-7"></a><span class="co">#                  publication.date = amazon_pub_dt)</span></span>
-<span id="cb21-8"><a href="#cb21-8"></a><span class="co">#head(r_books)</span></span></code></pre></div>
+<section><section id="fixing-the-scrapes" class="title-slide slide level1"><h1>Fixing the Scrapes</h1></section><section id="titles" class="slide level2">
+<h2>Titles</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="kw">length</span>(amazon_titles)</span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="co">#&gt; [1] 18</span></span></code></pre></div>
+</section><section id="authors" class="slide level2">
+<h2>Authors</h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">length</span>(amazon_authors)</span>
+<span id="cb20-3"><a href="#cb20-3"></a><span class="co">#&gt; [1] 0</span></span></code></pre></div>
+</section><section id="formats" class="slide level2">
+<h2>Formats</h2>
+<p>There is an unexpected record (20) showing a <code>Paperback</code> text not on the page.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>amazon_format &lt;-<span class="st"> </span>amazon_format[<span class="op">-</span><span class="dv">20</span>]</span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="kw">length</span>(amazon_format)</span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="co">#&gt; [1] 36</span></span></code></pre></div>
+</section><section id="prices" class="slide level2">
+<h2>Prices</h2>
+<p>There is an unexpected record (20) showing a price of <code>14.47</code> not on the page.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>amazon_price &lt;-<span class="st"> </span>amazon_price[<span class="op">-</span><span class="dv">20</span>]</span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="kw">length</span>(amazon_price)</span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="co">#&gt; [1] 36</span></span></code></pre></div>
+</section><section id="ratings" class="slide level2">
+<h2>Ratings</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>amazon_rating <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="st">  </span><span class="kw">append</span>(<span class="dt">values =</span> <span class="ot">NA</span>, <span class="dt">after =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="st">  </span><span class="kw">append</span>(<span class="dt">values =</span> <span class="ot">NA</span>, <span class="dt">after =</span> <span class="dv">11</span>) -&gt;<span class="st"> </span>amazon_rating</span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="kw">length</span>(amazon_rating)</span>
+<span id="cb23-5"><a href="#cb23-5"></a><span class="co">#&gt; [1] 12</span></span></code></pre></div>
+</section><section id="rating-counts" class="slide level2">
+<h2>Rating Counts</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>amazon_rate_n <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="st">  </span><span class="kw">append</span>(<span class="dt">values =</span> <span class="ot">NA</span>, <span class="dt">after =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="st">  </span><span class="kw">append</span>(<span class="dt">values =</span> <span class="ot">NA</span>, <span class="dt">after =</span> <span class="dv">11</span>) -&gt;<span class="st"> </span>amazon_rate_n</span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="kw">length</span>(amazon_rate_n)</span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="co">#&gt; [1] 17</span></span></code></pre></div>
+</section><section id="publication-date" class="slide level2">
+<h2>Publication Date</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a></span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="kw">length</span>(amazon_pub_dt)</span>
+<span id="cb25-3"><a href="#cb25-3"></a><span class="co">#&gt; [1] 18</span></span></code></pre></div>
+</section><section id="one-more-time" class="slide level2">
+<h2>One More Time!</h2>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">length</span>(amazon_titles)</span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="co">#&gt; [1] 18</span></span>
+<span id="cb26-3"><a href="#cb26-3"></a><span class="kw">length</span>(amazon_authors)</span>
+<span id="cb26-4"><a href="#cb26-4"></a><span class="co">#&gt; [1] 0</span></span>
+<span id="cb26-5"><a href="#cb26-5"></a><span class="kw">length</span>(amazon_format)</span>
+<span id="cb26-6"><a href="#cb26-6"></a><span class="co">#&gt; [1] 36</span></span>
+<span id="cb26-7"><a href="#cb26-7"></a><span class="kw">length</span>(amazon_price)</span>
+<span id="cb26-8"><a href="#cb26-8"></a><span class="co">#&gt; [1] 36</span></span>
+<span id="cb26-9"><a href="#cb26-9"></a><span class="kw">length</span>(amazon_rating)</span>
+<span id="cb26-10"><a href="#cb26-10"></a><span class="co">#&gt; [1] 12</span></span>
+<span id="cb26-11"><a href="#cb26-11"></a><span class="kw">length</span>(amazon_rate_n)</span>
+<span id="cb26-12"><a href="#cb26-12"></a><span class="co">#&gt; [1] 17</span></span>
+<span id="cb26-13"><a href="#cb26-13"></a><span class="kw">length</span>(amazon_pub_dt)</span>
+<span id="cb26-14"><a href="#cb26-14"></a><span class="co">#&gt; [1] 18</span></span></code></pre></div>
 </section></section>
+<section id="finally-assemble-the-data" class="title-slide slide level1"><h1>(Finally) Assemble the Data</h1><div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="co">#r_books &lt;- tibble(title = amazon_titles,</span></span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="co">#                  author = amazon_authors,</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="co">#                  text.format = amazon_format,</span></span>
+<span id="cb27-4"><a href="#cb27-4"></a><span class="co">#                  price = amazon_price,</span></span>
+<span id="cb27-5"><a href="#cb27-5"></a><span class="co">#                  rating = amazon_rating,</span></span>
+<span id="cb27-6"><a href="#cb27-6"></a><span class="co">#                  num.ratings = amazon_rate_n,</span></span>
+<span id="cb27-7"><a href="#cb27-7"></a><span class="co">#                  publication.date = amazon_pub_dt)</span></span>
+<span id="cb27-8"><a href="#cb27-8"></a><span class="co">#head(r_books)</span></span></code></pre></div></section>
 <section id="thank-you" class="title-slide slide level1"><h1>Thank you</h1><p><img src="data:image/png;base64,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" width="30" height="30"><br />
 <a href="https://twitter.com/mjhendrickson">@mjhendrickson</a></p>
 <p><img src="data:image/png;base64,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" width="30" height="30"><br />
@@ -2098,6 +2154,7 @@ Image credit: <a href="http://www2.stat.duke.edu/~fl35/teaching/440-19F/decks/we
 <li class="fragment">Rsquared Academy (2019). “Practical Introduction to Web Scraping in R.” <a href="https://blog.rsquaredacademy.com/2019/04/11/web-scraping/">https://blog.rsquaredacademy.com/2019/04/11/web-scraping/</a>.</li>
 <li class="fragment">W3Schools (no date). “CSS Introduction.” <a href="https://www.w3schools.com/css/css_intro.asp">https://www.w3schools.com/css/css_intro.asp</a>.</li>
 <li class="fragment">W3Schools (no date). “HTML Introduction.” <a href="https://www.w3schools.com/html/html_intro.asp">https://www.w3schools.com/html/html_intro.asp</a>.</li>
+<li class="fragment">W3Schools (no date). “XPath Syntax.” <a href="https://www.w3schools.com/xml/xpath_syntax.asp">https://www.w3schools.com/xml/xpath_syntax.asp</a>.</li>
 <li class="fragment">Wikipedia (2020). “Web scraping.” <a href="https://en.wikipedia.org/wiki/Web_scraping">https://en.wikipedia.org/wiki/Web_scraping</a>.</li>
 </ul>
 </section></section>

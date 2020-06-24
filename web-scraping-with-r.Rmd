@@ -24,10 +24,8 @@ library(rvest)
 
 # ITEMS TO FIX:
 
-1. Author
-2. Scraping Methods
-3. Data Assembly
-4. All elements - ueven number of records
+1. Author - may not be possible without JS or Selenium
+2. Data Assembly - uneven number of records
 
 
 
@@ -79,6 +77,8 @@ Ensure these are updated
 
 Web scraping is a flexible method to extract data from the internet. It can involve extracting numerical or text data.
 
+
+
 ## Use Cases
 
 There are many uses for web scraping, including but not limited to:
@@ -89,6 +89,8 @@ There are many uses for web scraping, including but not limited to:
    4. Brand monitoring
    5. Market analysis
    6. Lead generation
+
+
 
 ## Robots File
 
@@ -121,6 +123,8 @@ This example shows that Netflix does not allow you to scrape their site.
 <img src = "images/html-structure.png">
 
 <p style = "font-size:65%;">Image credit: [Professor Shawn Santo](http://www2.stat.duke.edu/~fl35/teaching/440-19F/decks/webscraping2.html#3)</p>
+
+
 
 ## HTML vs CSS
 "HTML is the standard markup language for creating Web pages." -- W3Schools
@@ -163,6 +167,8 @@ There are many types of tags - here are some important ones for scraping:
 
 
 # Web Scraping
+
+
 
 ## Scraping Methods
 
@@ -234,6 +240,8 @@ The element pulls a number of breaks and blank spaces.
 
 Let's clean this up with `str_trim`.
 
+
+
 ## The titles have a great deal of white space and breaks (`\n`), these need to be removed
 
 ```{r amazon_title_clean, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
@@ -242,18 +250,6 @@ head(amazon_titles)
 ```
 
 This simple function returns cleaned text.
-
-Unfortunately, there are multiple formats and prices for each title. Here's we'll create additional title records for creating the dataset.
-
----
-
-```{r amazon_title_duplicate, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-#amazon_titles %>% 
-  #append(values = NA, after = 1) -> amazon_titles
-#head(amazon_titles)
-```
-
-This structure will serve our needs for future steps.
 
 
 
@@ -264,7 +260,8 @@ This structure will serve our needs for future steps.
 ```{r amazon_author, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
 #  html_nodes("a.a-size-base.a-link-normal") %>% 
-  html_nodes("div.a-row.a-size-base.a-color-secondary") %>% 
+#  html_nodes("div.a-row.a-size-base.a-color-secondary") %>% 
+html_nodes(xpath = '//*[@id="search"]/div[1]/div[2]/div/span[3]/div[2]/div[3]/div/span/div/div/div[2]/div[2]/div/div[1]/div/div/div[1]/div/a[1]') %>% 
   html_text() %>% 
   str_trim() -> amazon_authors
 head(amazon_authors)
@@ -273,6 +270,8 @@ head(amazon_authors)
 We run into issues due to the element in which authors are placed.
 
 We also need to split the author fields.
+
+
 
 ## Splitting the Author Field
 
@@ -314,6 +313,8 @@ head(amazon_price_whole)
 
 The price structure splits price into two elements. We must pull each and combine them into a single price.
 
+
+
 ## Get (the rest of) the book price
 
 ```{r price_fraction, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
@@ -322,6 +323,8 @@ amazon %>%
   html_text() -> amazon_price_fraction
 head(amazon_price_fraction)
 ```
+
+
 
 ## Combine price portions
 
@@ -343,21 +346,12 @@ amazon %>%
 head(amazon_rating)
 ```
 
-## Let's trim this into a usable metric.
+
+
+## Let's trim this into a usable metric
 
 ```{r rate_trim, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rating <- as.numeric(substr(amazon_rating, 1, 3))
-head(amazon_rating)
-```
-
-## Another issue with ratings is that not all titles have ratings. We must adjust for this.
-
-I'll do this manually by appending NA where ratings are missing.
-
-```{r rate_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_rating %>% 
-  append(values = NA, after = 1) %>% 
-  append(values = NA, after = 11) -> amazon_rating
 head(amazon_rating)
 ```
 
@@ -382,17 +376,6 @@ amazon_rate_n <- as.numeric(amazon_rate_n)
 head(amazon_rate_n)
 ```
 
-## Not all titles have rating counts
-
-We must adjust for this. I'll do this manually by appending NA where rating counts are missing.
-
-```{r rate_n_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_rate_n %>% 
-  append(values = NA, after = 1) %>% 
-  append(values = NA, after = 11) -> amazon_rate_n
-head(amazon_rate_n)
-```
-
 
 
 
@@ -406,7 +389,9 @@ amazon %>%
 head(amazon_pub_dt)
 ```
 
-## We need to convert this to a date to allow easier analysis.
+
+
+## We need to convert this to a date to allow easier analysis
 
 ```{r pub_dt_clean, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_pub_dt <- as.Date(amazon_pub_dt, "%b %d, %Y")
@@ -421,7 +406,132 @@ head(amazon_pub_dt)
 
 Let's assemble the file!
 
-### Assemble the data
+1. Titles
+2. Authors
+3. Formats
+4. Prices
+5. Ratings
+6. Rating Counts
+7. Publication Date
+
+
+
+## Let's Check the Scrapes
+
+```{r uneven_counts, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+length(amazon_titles)
+length(amazon_authors)
+length(amazon_format)
+length(amazon_price)
+length(amazon_rating)
+length(amazon_rate_n)
+length(amazon_pub_dt)
+```
+
+
+
+## Wait! What?!?
+
+An issue with scraping is sometimes you get an uneven number of records due to missing data elements.
+
+We can fix this (manually)!
+
+
+
+
+
+# Fixing the Scrapes
+
+
+
+## Titles
+
+```{r title_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+
+length(amazon_titles)
+```
+
+
+
+## Authors
+
+```{r author_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+
+length(amazon_authors)
+```
+
+
+
+## Formats
+
+There is an unexpected record (20) showing a `Paperback` text not on the page.
+
+```{r format_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_format <- amazon_format[-20]
+length(amazon_format)
+```
+
+
+
+## Prices
+
+There is an unexpected record (20) showing a price of `14.47` not on the page.
+
+```{r price_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_price <- amazon_price[-20]
+length(amazon_price)
+```
+
+
+
+## Ratings
+
+```{r rate_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_rating %>% 
+  append(values = NA, after = 1) %>% 
+  append(values = NA, after = 11) -> amazon_rating
+length(amazon_rating)
+```
+
+
+
+## Rating Counts
+
+```{r rate_n_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_rate_n %>% 
+  append(values = NA, after = 1) %>% 
+  append(values = NA, after = 11) -> amazon_rate_n
+length(amazon_rate_n)
+```
+
+
+
+## Publication Date
+
+```{r pub_dt_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+
+length(amazon_pub_dt)
+```
+
+
+
+## One More Time!
+
+```{r even_counts, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+length(amazon_titles)
+length(amazon_authors)
+length(amazon_format)
+length(amazon_price)
+length(amazon_rating)
+length(amazon_rate_n)
+length(amazon_pub_dt)
+```
+
+
+
+
+
+# (Finally) Assemble the Data
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 #r_books <- tibble(title = amazon_titles,
@@ -467,9 +577,12 @@ This talk is freely distributed under the MIT License.
 - Kaushik S (2017). "Beginner's Guide on Web Scraping in R (using rvest) with hands-on example." [https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/](https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/).
 - Perceptive Analytics on KDnuggets (2018). "A Primer on Web Scraping in R." [https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html](https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html).
 
+
+
 ## References continued
 
 - Rsquared Academy (2019). "Practical Introduction to Web Scraping in R." [https://blog.rsquaredacademy.com/2019/04/11/web-scraping/](https://blog.rsquaredacademy.com/2019/04/11/web-scraping/).
 - W3Schools (no date). "CSS Introduction." [https://www.w3schools.com/css/css_intro.asp](https://www.w3schools.com/css/css_intro.asp).
 - W3Schools (no date). "HTML Introduction." [https://www.w3schools.com/html/html_intro.asp](https://www.w3schools.com/html/html_intro.asp).
+- W3Schools (no date). "XPath Syntax." [https://www.w3schools.com/xml/xpath_syntax.asp](https://www.w3schools.com/xml/xpath_syntax.asp).
 - Wikipedia (2020). "Web scraping." [https://en.wikipedia.org/wiki/Web_scraping](https://en.wikipedia.org/wiki/Web_scraping).
