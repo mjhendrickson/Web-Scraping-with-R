@@ -22,25 +22,30 @@ library(robotstxt)
 library(rvest)
 ```
 
-# ITEMS TO FIX:
 
-1. Author - may not be possible without JS or Selenium
-2. Data Assembly - uneven number of records
-
-
+```{r save files, include=FALSE, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE}
+#SAVE BACKUPS OF DATA FOR EASE OF COMPILATION
+#write.table(amazon_format, "data/format.txt")
+#write.table(amazon_price, "data/price.txt")
+#write.table(amazon_price_fraction, "data/price_fraction.txt")
+#write.table(amazon_price_whole, "data/price_whole.txt")
+#write.table(amazon_pub_dt, "data/pub_dt.txt")
+#write.table(amazon_rate_n, "data/rate_n.txt")
+#write.table(amazon_rating, "data/rating.txt")
+#write.table(amazon_titles, "data/titles.txt")
+#saveRDS(r_books, "data/r_books.rds")
+```
 
 
 
 # Topics
-
-Ensure these are updated
 
 1. About Me
 2. A Little About Web Scraping
 3. Robots.txt
 4. HTML Structure
 5. A Little Help with CSS
-6. Scraping Methods (HTML & XPATH)
+6. Web Scraping
 7. The Setup
 8. Scraping the Data
 9. Assembling the Data
@@ -146,9 +151,7 @@ Another option is to inspect the page elements, which is available for most majo
 
 
 
-
-
-# HTML Tags
+### HTML Tags
 
 HTML is strucutred with "tags." These tags indicate portions of the page and can be called by their structure.
 
@@ -194,9 +197,7 @@ That's it! These are all the tools you'll need.
 
 
 
-
-
-# Determine a website to scrape
+### Determine a website to scrape
 
 It only seems appropriate to pull data from Amazon regarding R books
 
@@ -220,7 +221,6 @@ Before you can get started, you must specific the URLs to pass to the function.
 
 ```{r amazon_html, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&qid=1592086532&rnid=1000&ref=sr_nr_n_1")
-# amazon_pg_2 <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&page=2&qid=1592086539&rnid=1000&ref=sr_pg_2")
 ```
 
 
@@ -255,40 +255,7 @@ This simple function returns cleaned text.
 
 
 
-# Get the book author(s)
-
-```{r amazon_author, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon %>% 
-#  html_nodes("a.a-size-base.a-link-normal") %>% 
-#  html_nodes("div.a-row.a-size-base.a-color-secondary") %>% 
-html_nodes(xpath = '//*[@id="search"]/div[1]/div[2]/div/span[3]/div[2]/div[3]/div/span/div/div/div[2]/div[2]/div/div[1]/div/div/div[1]/div/a[1]') %>% 
-  html_text() %>% 
-  str_trim() -> amazon_authors
-head(amazon_authors)
-```
-
-We run into issues due to the element in which authors are placed.
-
-We also need to split the author fields.
-
-
-
-## Splitting the Author Field
-
-```{r amazon_author_split, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-#amazon %>% 
-#  html_nodes("a.a-size-base.a-link-normal") %>% 
-#  html_nodes("div.a-row.a-size-base.a-color-secondary") %>% 
-#  html_text() %>% 
-#  str_trim() -> amazon_authors
-#head(amazon_authors)
-```
-
-
-
-
-
-# Get the book format
+# Scraping the Book Format
 
 ```{r format, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -302,7 +269,7 @@ head(amazon_format)
 
 
 
-# Get the book price
+# Scraping the Book Price
 
 ```{r price_whole, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -315,7 +282,7 @@ The price structure splits price into two elements. We must pull each and combin
 
 
 
-## Get (the rest of) the book price
+## Scraping (the rest of) the Book Price
 
 ```{r price_fraction, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -326,7 +293,7 @@ head(amazon_price_fraction)
 
 
 
-## Combine price portions
+## Combine Price Portions
 
 ```{r price_total, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_price <- as.numeric(paste(amazon_price_whole, amazon_price_fraction, sep = ""))
@@ -337,7 +304,7 @@ head(amazon_price)
 
 
 
-# Get the book rating
+# Scraping the Book Rating
 
 ```{r rate, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -359,17 +326,15 @@ head(amazon_rating)
 
 
 
-# Get the book rating count
+# Scraping the Book Rating Count
 
 We'll run into the same issue as the actual rating. But first, we'll also see a number of cleaning steps are needed.
 
 ```{r rate_n, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
-#  html_nodes("span.a-size-base") %>% 
   html_nodes("div.a-row.a-size-small") %>% 
   html_text() -> amazon_rate_n
 amazon_rate_n <- str_trim(amazon_rate_n) # trim
-#amazon_rate_n <- str_sub(amazon_rate_n, regex(?<=\s))
 amazon_rate_n <- str_sub(amazon_rate_n, -5) # keep last 5 characters
 amazon_rate_n <- str_trim(amazon_rate_n) # trim leading spaces
 amazon_rate_n <- as.numeric(amazon_rate_n)
@@ -380,7 +345,7 @@ head(amazon_rate_n)
 
 
 
-# Get the book publication date
+# Scraping the Book Publication Date
 
 ```{r pub_dt, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -407,12 +372,11 @@ head(amazon_pub_dt)
 Let's assemble the file!
 
 1. Titles
-2. Authors
-3. Formats
-4. Prices
-5. Ratings
-6. Rating Counts
-7. Publication Date
+2. Formats
+3. Prices
+4. Ratings
+5. Rating Counts
+6. Publication Date
 
 
 
@@ -420,7 +384,6 @@ Let's assemble the file!
 
 ```{r uneven_counts, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 length(amazon_titles)
-length(amazon_authors)
 length(amazon_format)
 length(amazon_price)
 length(amazon_rating)
@@ -446,28 +409,40 @@ We can fix this (manually)!
 
 ## Titles
 
+All titles were populated and scraped accurately. However, due to multiple formats, these records must be repeated to fill the dataframe.
+
 ```{r title_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-
+amazon_titles %>% 
+  append(values = amazon_titles[16], after = 16) %>% 
+  append(values = amazon_titles[15], after = 15) %>% 
+  append(values = amazon_titles[14], after = 14) %>% 
+  append(values = amazon_titles[13], after = 13) %>% 
+  append(values = amazon_titles[12], after = 12) %>% 
+  append(values = amazon_titles[11], after = 11) %>% 
+  append(values = amazon_titles[11], after = 11) %>% 
+  append(values = amazon_titles[10], after = 10) %>% 
+  append(values = amazon_titles[9], after = 9) %>% 
+  append(values = amazon_titles[8], after = 8) %>% 
+  append(values = amazon_titles[7], after = 7) %>% 
+  append(values = amazon_titles[6], after = 6) %>% 
+  append(values = amazon_titles[6], after = 6) %>% 
+  append(values = amazon_titles[5], after = 5) %>% 
+  append(values = amazon_titles[5], after = 5) %>% 
+  append(values = amazon_titles[4], after = 4) %>% 
+  append(values = amazon_titles[4], after = 4) %>% 
+  append(values = amazon_titles[3], after = 3) %>% 
+  append(values = amazon_titles[2], after = 2) %>% 
+  append(values = amazon_titles[1], after = 1) -> amazon_titles
 length(amazon_titles)
-```
-
-
-
-## Authors
-
-```{r author_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-
-length(amazon_authors)
 ```
 
 
 
 ## Formats
 
-There is an unexpected record (20) showing a `Paperback` text not on the page.
+Nothing needed here!
 
 ```{r format_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_format <- amazon_format[-20]
 length(amazon_format)
 ```
 
@@ -475,10 +450,9 @@ length(amazon_format)
 
 ## Prices
 
-There is an unexpected record (20) showing a price of `14.47` not on the page.
+Nothing needed here!
 
 ```{r price_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_price <- amazon_price[-20]
 length(amazon_price)
 ```
 
@@ -486,21 +460,100 @@ length(amazon_price)
 
 ## Ratings
 
+Some books do not have ratings. A book only has one rating even if it has multiple formats.
+
+For example, the 5th and 7th book do not have ratings. For some reason, the 6th, 13th, 14th, and 16th book ratings were not captured.
+
+We must also account for multiple formats.
+
 ```{r rate_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rating %>% 
-  append(values = NA, after = 1) %>% 
-  append(values = NA, after = 11) -> amazon_rating
+  append(values = NA, after = 4) %>%   #  4th - no rating
+  append(values = 4.8, after = 5) %>%  #  6th - missing rating
+  append(values = NA, after = 6) %>%   #  7th - no rating
+  append(values = 4.2, after = 12) %>% # 13th - missing rating
+  append(values = 3.9, after = 13) %>% # 14th - missing rating
+  append(values = 3.8, after = 14) -> amazon_rating
 length(amazon_rating)
+```
+
+
+
+## Ratings
+
+Like titles, the ratings need to be repeated to show on the correct row.
+
+All titles were populated and scraped accurately. However, due to multiple formats, these records must be repeated to fill the dataframe.
+
+```{r rate_missing_repeat, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_rating %>% 
+  append(values = amazon_rating[16], after = 16) %>% 
+  append(values = amazon_rating[15], after = 15) %>% 
+  append(values = amazon_rating[14], after = 14) %>% 
+  append(values = amazon_rating[13], after = 13) %>% 
+  append(values = amazon_rating[12], after = 12) %>% 
+  append(values = amazon_rating[11], after = 11) %>% 
+  append(values = amazon_rating[11], after = 11) %>% 
+  append(values = amazon_rating[10], after = 10) %>% 
+  append(values = amazon_rating[9], after = 9) %>% 
+  append(values = amazon_rating[8], after = 8) %>% 
+  append(values = amazon_rating[7], after = 7) %>% 
+  append(values = amazon_rating[6], after = 6) %>% 
+  append(values = amazon_rating[6], after = 6) %>% 
+  append(values = amazon_rating[5], after = 5) %>% 
+  append(values = amazon_rating[5], after = 5) %>% 
+  append(values = amazon_rating[4], after = 4) %>% 
+  append(values = amazon_rating[4], after = 4) %>% 
+  append(values = amazon_rating[3], after = 3) %>% 
+  append(values = amazon_rating[2], after = 2) %>% 
+  append(values = amazon_rating[1], after = 1) -> amazon_rating
+length(amazon_rating)
+```
+
+
+
+
+## Rating Counts
+
+Not all titles have a rating, specifically 5 and 7
+
+We must also account for multiple formats.
+
+```{r rate_n_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_rate_n %>% 
+  append(values = NA, after = 4) %>% 
+  append(values = NA, after = 6) -> amazon_rate_n
+length(amazon_rate_n)
 ```
 
 
 
 ## Rating Counts
 
-```{r rate_n_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+We must also account for multiple formats.
+
+```{r rate_n_missing_repeat, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rate_n %>% 
-  append(values = NA, after = 1) %>% 
-  append(values = NA, after = 11) -> amazon_rate_n
+  append(values = amazon_rate_n[16], after = 16) %>% 
+  append(values = amazon_rate_n[15], after = 15) %>% 
+  append(values = amazon_rate_n[14], after = 14) %>% 
+  append(values = amazon_rate_n[13], after = 13) %>% 
+  append(values = amazon_rate_n[12], after = 12) %>% 
+  append(values = amazon_rate_n[11], after = 11) %>% 
+  append(values = amazon_rate_n[11], after = 11) %>% 
+  append(values = amazon_rate_n[10], after = 10) %>% 
+  append(values = amazon_rate_n[9], after = 9) %>% 
+  append(values = amazon_rate_n[8], after = 8) %>% 
+  append(values = amazon_rate_n[7], after = 7) %>% 
+  append(values = amazon_rate_n[6], after = 6) %>% 
+  append(values = amazon_rate_n[6], after = 6) %>% 
+  append(values = amazon_rate_n[5], after = 5) %>% 
+  append(values = amazon_rate_n[5], after = 5) %>% 
+  append(values = amazon_rate_n[4], after = 4) %>% 
+  append(values = amazon_rate_n[4], after = 4) %>% 
+  append(values = amazon_rate_n[3], after = 3) %>% 
+  append(values = amazon_rate_n[2], after = 2) %>% 
+  append(values = amazon_rate_n[1], after = 1) -> amazon_rate_n
 length(amazon_rate_n)
 ```
 
@@ -508,8 +561,30 @@ length(amazon_rate_n)
 
 ## Publication Date
 
-```{r pub_dt_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+One last time to create extra rows due to multiple book formats.
 
+```{r pub_dt_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_pub_dt %>% 
+  append(values = amazon_pub_dt[16], after = 16) %>% 
+  append(values = amazon_pub_dt[15], after = 15) %>% 
+  append(values = amazon_pub_dt[14], after = 14) %>% 
+  append(values = amazon_pub_dt[13], after = 13) %>% 
+  append(values = amazon_pub_dt[12], after = 12) %>% 
+  append(values = amazon_pub_dt[11], after = 11) %>% 
+  append(values = amazon_pub_dt[11], after = 11) %>% 
+  append(values = amazon_pub_dt[10], after = 10) %>% 
+  append(values = amazon_pub_dt[9], after = 9) %>% 
+  append(values = amazon_pub_dt[8], after = 8) %>% 
+  append(values = amazon_pub_dt[7], after = 7) %>% 
+  append(values = amazon_pub_dt[6], after = 6) %>% 
+  append(values = amazon_pub_dt[6], after = 6) %>% 
+  append(values = amazon_pub_dt[5], after = 5) %>% 
+  append(values = amazon_pub_dt[5], after = 5) %>% 
+  append(values = amazon_pub_dt[4], after = 4) %>% 
+  append(values = amazon_pub_dt[4], after = 4) %>% 
+  append(values = amazon_pub_dt[3], after = 3) %>% 
+  append(values = amazon_pub_dt[2], after = 2) %>% 
+  append(values = amazon_pub_dt[1], after = 1) -> amazon_pub_dt
 length(amazon_pub_dt)
 ```
 
@@ -519,7 +594,6 @@ length(amazon_pub_dt)
 
 ```{r even_counts, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 length(amazon_titles)
-length(amazon_authors)
 length(amazon_format)
 length(amazon_price)
 length(amazon_rating)
@@ -534,14 +608,13 @@ length(amazon_pub_dt)
 # (Finally) Assemble the Data
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-#r_books <- tibble(title = amazon_titles,
-#                  author = amazon_authors,
-#                  text.format = amazon_format,
-#                  price = amazon_price,
-#                  rating = amazon_rating,
-#                  num.ratings = amazon_rate_n,
-#                  publication.date = amazon_pub_dt)
-#head(r_books)
+r_books <- tibble(title = amazon_titles,
+                  text.format = amazon_format,
+                  price = amazon_price,
+                  rating = amazon_rating,
+                  num.ratings = amazon_rate_n,
+                  publication.date = amazon_pub_dt)
+head(r_books)
 ```
 
 
@@ -568,19 +641,19 @@ This talk is freely distributed under the MIT License.
 
 
 
-# References
+# References & Resources
 
 - Bauer V (2016). "Introduction to Web Scraping in R: Very Applied Methods Workgoup." [https://stanford.edu/~vbauer/files/teaching/VAMScrapingSlides.html](https://stanford.edu/~vbauer/files/teaching/VAMScrapingSlides.html).
 - University of Cincinnati (2018). "UC Business Analytics R Programming Guide." Specifically the portion of scraping. [https://uc-r.github.io/](https://uc-r.github.io/).
 - Dataquest (no date). "Tutorial: Web Scraping in R with rvest." [https://www.dataquest.io/blog/web-scraping-in-r-rvest/](https://www.dataquest.io/blog/web-scraping-in-r-rvest/).
 - Im J (2019). "Web Scraping Product Data in R with rvest and purrr." [https://www.business-science.io/code-tools/2019/10/07/rvest-web-scraping.html](https://www.business-science.io/code-tools/2019/10/07/rvest-web-scraping.html).
 - Kaushik S (2017). "Beginner's Guide on Web Scraping in R (using rvest) with hands-on example." [https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/](https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/).
+
+
+
+## References & Resources continued
+
 - Perceptive Analytics on KDnuggets (2018). "A Primer on Web Scraping in R." [https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html](https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html).
-
-
-
-## References continued
-
 - Rsquared Academy (2019). "Practical Introduction to Web Scraping in R." [https://blog.rsquaredacademy.com/2019/04/11/web-scraping/](https://blog.rsquaredacademy.com/2019/04/11/web-scraping/).
 - W3Schools (no date). "CSS Introduction." [https://www.w3schools.com/css/css_intro.asp](https://www.w3schools.com/css/css_intro.asp).
 - W3Schools (no date). "HTML Introduction." [https://www.w3schools.com/html/html_intro.asp](https://www.w3schools.com/html/html_intro.asp).
