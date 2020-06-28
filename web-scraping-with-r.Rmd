@@ -334,9 +334,17 @@ We'll run into the same issue as the actual rating. But first, we'll also see a 
 amazon %>% 
   html_nodes("div.a-row.a-size-small") %>% 
   html_text() -> amazon_rate_n
-amazon_rate_n <- str_trim(amazon_rate_n) # trim
+head(amazon_rate_n)
+```
+
+
+
+## Clean up Rating Count
+
+```{r rate_n_trim, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_rate_n <- str_trim(amazon_rate_n)    # trim \n & ' '
 amazon_rate_n <- str_sub(amazon_rate_n, -5) # keep last 5 characters
-amazon_rate_n <- str_trim(amazon_rate_n) # trim leading spaces
+amazon_rate_n <- str_trim(amazon_rate_n)    # trim leading spaces
 amazon_rate_n <- as.numeric(amazon_rate_n)
 head(amazon_rate_n)
 ```
@@ -654,7 +662,7 @@ This talk is freely distributed under the MIT License.
 ## References & Resources continued
 
 - Perceptive Analytics on KDnuggets (2018). "A Primer on Web Scraping in R." [https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html](https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html).
-- Rsquared Academy (2019). "Practical Introduction to Web Scraping in R." [https://blog.rsquaredacademy.com/2019/04/11/web-scraping/](https://blog.rsquaredacademy.com/2019/04/11/web-scraping/).
+- Rsquared Academy (2019). "Practical Introduction to Web Scraping in R." [https://blog.rsquaredacademy.com/web-scraping/](https://blog.rsquaredacademy.com/web-scraping/).
 - W3Schools (no date). "CSS Introduction." [https://www.w3schools.com/css/css_intro.asp](https://www.w3schools.com/css/css_intro.asp).
 - W3Schools (no date). "HTML Introduction." [https://www.w3schools.com/html/html_intro.asp](https://www.w3schools.com/html/html_intro.asp).
 - W3Schools (no date). "XPath Syntax." [https://www.w3schools.com/xml/xpath_syntax.asp](https://www.w3schools.com/xml/xpath_syntax.asp).
