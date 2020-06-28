@@ -43,13 +43,12 @@ library(rvest)
 1. About Me
 2. A Little About Web Scraping
 3. Robots.txt
-4. HTML Structure
-5. A Little Help with CSS
-6. Web Scraping
-7. The Setup
-8. Scraping the Data
-9. Assembling the Data
-10. References & Resources
+4. HTML & CSS
+5. Web Scraping
+6. The Setup
+7. Scraping the Data
+8. Assembling the Data
+9. References & Resources
 
 
 
@@ -97,21 +96,17 @@ There are many uses for web scraping, including but not limited to:
 
 
 
-## Robots File
+# Robots.txt
 
 Always ensure - <strong>PRIOR to scraping</strong> - that you have rights to scrape the website.
 
 This is critical as you can be blocked from sites or even face legal action.
 
+
+
+## Robots.txt
+
 Good news! You can easily check with the `robotstxt` package.
-
-
-
-
-
-# Robots.txt
-
-Always ensure you check the robots.txt file! This assures you are not breaking the terms of service by scraping the site.
 
 ```{r robots, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 paths_allowed(paths = c("https://netflix.com/"))
@@ -123,7 +118,14 @@ This example shows that Netflix does not allow you to scrape their site.
 
 
 
-# HTML Structure
+# HTML & CSS
+"HTML is the standard markup language for creating Web pages." -- W3Schools
+
+"CSS describes how HTML elements are to be displayed on screen, paper, or in other media." -- W3Schools
+
+
+
+## HTML Structure
 
 <img src = "images/html-structure.png">
 
@@ -131,27 +133,7 @@ This example shows that Netflix does not allow you to scrape their site.
 
 
 
-## HTML vs CSS
-"HTML is the standard markup language for creating Web pages." -- W3Schools
-
-"CSS describes how HTML elements are to be displayed on screen, paper, or in other media." -- W3Schools
-
-
-
-
-
-# A Little Help with CSS
-If you aren't familiar with CSS, extracting parts of a website can be daunting.
-
-[SelectorGadget](https://selectorgadget.com/) is incredibly helpful for this purpose. However, it is only available for Chrome.
-
-<img src = "images/selector_gadget.png">
-
-Another option is to inspect the page elements, which is available for most major browsers, including Chrome, Firefox, as developer tools.
-
-
-
-### HTML Tags
+## HTML Tags
 
 HTML is strucutred with "tags." These tags indicate portions of the page and can be called by their structure.
 
@@ -164,6 +146,17 @@ There are many types of tags - here are some important ones for scraping:
 - `<li>` - individual list item
 - `<div>` - division
 - `<table>` - table
+
+
+
+## A Little Help with CSS
+If you aren't familiar with CSS, extracting parts of a website can be daunting.
+
+[SelectorGadget](https://selectorgadget.com/) is incredibly helpful for this purpose. However, it is only available for Chrome.
+
+<img src = "images/selector_gadget.png">
+
+Another option is to inspect the page elements, which is available for most major browsers, including Chrome, Firefox, as developer tools.
 
 
 
@@ -616,13 +609,13 @@ length(amazon_pub_dt)
 # (Finally) Assemble the Data
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-r_books <- tibble(title = amazon_titles,
-                  text.format = amazon_format,
-                  price = amazon_price,
-                  rating = amazon_rating,
-                  num.ratings = amazon_rate_n,
-                  publication.date = amazon_pub_dt)
-head(r_books)
+#r_books <- tibble(title = amazon_titles,
+#                  text.format = amazon_format,
+#                  price = amazon_price,
+#                  rating = amazon_rating,
+#                  num.ratings = amazon_rate_n,
+#                  publication.date = amazon_pub_dt)
+#head(r_books)
 ```
 
 
