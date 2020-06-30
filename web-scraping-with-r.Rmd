@@ -178,7 +178,7 @@ XPATH - useful when the node isn't uniquely identified with CSS
 
 # The Setup
 
-Set up the environment to scrap the site.
+Set up the environment to scrape the site.
 
 ```{r setup_slide, eval = FALSE}
 library(tidyverse)
@@ -260,9 +260,20 @@ head(amazon_format)
 
 
 
+## Clean up book format values
+
+```{r format_clean, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+amazon_format <- str_trim(amazon_format)
+head(amazon_format)
+```
+
+
+
 
 
 # Scraping the Book Price
+
+The price structure splits price into two elements. We must pull each and combine them into a single price.
 
 ```{r price_whole, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -270,8 +281,6 @@ amazon %>%
   html_text() -> amazon_price_whole
 head(amazon_price_whole)
 ```
-
-The price structure splits price into two elements. We must pull each and combine them into a single price.
 
 
 
@@ -311,7 +320,7 @@ head(amazon_rating)
 ## Let's trim this into a usable metric
 
 ```{r rate_trim, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon_rating <- as.numeric(substr(amazon_rating, 1, 3))
+amazon_rating <- as.numeric(substr(amazon_rating, 1, 3)) # Takes 3 characters starting at 1
 head(amazon_rating)
 ```
 
@@ -321,7 +330,7 @@ head(amazon_rating)
 
 # Scraping the Book Rating Count
 
-We'll run into the same issue as the actual rating. But first, we'll also see a number of cleaning steps are needed.
+This element is messier and we'll need a number of cleaning steps.
 
 ```{r rate_n, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -398,7 +407,9 @@ length(amazon_pub_dt)
 
 An issue with scraping is sometimes you get an uneven number of records due to missing data elements.
 
-We can fix this (manually)!
+We can fix this!
+
+- ...manually...
 
 
 
@@ -484,7 +495,7 @@ length(amazon_rating)
 
 Like titles, the ratings need to be repeated to show on the correct row.
 
-All titles were populated and scraped accurately. However, due to multiple formats, these records must be repeated to fill the dataframe.
+The same corrections are done here.
 
 ```{r rate_missing_repeat, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rating %>% 
@@ -517,8 +528,6 @@ length(amazon_rating)
 ## Rating Counts
 
 Not all titles have a rating, specifically 5 and 7
-
-We must also account for multiple formats.
 
 ```{r rate_n_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rate_n %>% 
@@ -562,7 +571,7 @@ length(amazon_rate_n)
 
 ## Publication Date
 
-One last time to create extra rows due to multiple book formats.
+Create extra rows due to multiple book formats.
 
 ```{r pub_dt_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_pub_dt %>% 
@@ -591,7 +600,7 @@ length(amazon_pub_dt)
 
 
 
-## One More Time!
+## One More Check!
 
 ```{r even_counts, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 length(amazon_titles)
@@ -610,11 +619,11 @@ length(amazon_pub_dt)
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 #r_books <- tibble(title = amazon_titles,
-#                  text.format = amazon_format,
+#                  text_format = amazon_format,
 #                  price = amazon_price,
 #                  rating = amazon_rating,
-#                  num.ratings = amazon_rate_n,
-#                  publication.date = amazon_pub_dt)
+#                  num_ratings = amazon_rate_n,
+#                  publication_date = amazon_pub_dt)
 #head(r_books)
 ```
 
