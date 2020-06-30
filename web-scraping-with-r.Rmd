@@ -38,6 +38,8 @@ library(rvest)
 
 
 
+
+
 # Topics
 
 1. About Me
@@ -212,15 +214,23 @@ We are good to scrape!
 
 Before you can get started, you must specific the URLs to pass to the function.
 
+Data as of `r Sys.Date()`.
+
 ```{r amazon_html, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-amazon <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&qid=1592086532&rnid=1000&ref=sr_nr_n_1")
+  amazon <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&qid=1592086532&rnid=1000&ref=sr_nr_n_1")
 ```
 
 
 
 
 
-# Scraping Book Titles
+# Titles
+
+<img src = "images/r4ds_title.png">
+
+
+
+## Scraping Book Titles
 
 ```{r amazon_title, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -248,13 +258,17 @@ This simple function returns cleaned text.
 
 
 
-# Scraping the Book Format
+# Formats
+
+<img src = "images/r4ds_format.png">
+
+
+## Scraping the Book Format
 
 ```{r format, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
   html_nodes("a.a-size-base.a-link-normal.a-text-bold") %>% 
-  html_text() %>% 
-  str_trim() -> amazon_format
+  html_text() -> amazon_format
 head(amazon_format)
 ```
 
@@ -271,7 +285,15 @@ head(amazon_format)
 
 
 
-# Scraping the Book Price
+# Price
+
+<img src = "images/r4ds_price_whole.png">
+
+<img src = "images/r4ds_price_fraction.png">
+
+
+
+## Scraping the Book Price
 
 The price structure splits price into two elements. We must pull each and combine them into a single price.
 
@@ -306,11 +328,17 @@ head(amazon_price)
 
 
 
-# Scraping the Book Rating
+# Rating
+
+<img src = "images/r4ds_rating.png">
+
+
+
+## Scraping the Book Rating
 
 ```{r rate, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
-  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4-5.aok-align-bottom") %>% 
+  html_nodes("i.a-icon.a-icon-star-small.aok-align-bottom") %>% 
   html_text() -> amazon_rating
 head(amazon_rating)
 ```
@@ -328,7 +356,13 @@ head(amazon_rating)
 
 
 
-# Scraping the Book Rating Count
+# Rating Counts
+
+<img src = "images/r4ds_rating_n.png">
+
+
+
+## Scraping the Book Rating Count
 
 This element is messier and we'll need a number of cleaning steps.
 
@@ -341,12 +375,36 @@ head(amazon_rate_n)
 
 
 
-## Clean up Rating Count
+## Clean up Rating Count - Trim
 
 ```{r rate_n_trim, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rate_n <- str_trim(amazon_rate_n)    # trim \n & ' '
+head(amazon_rate_n)
+```
+
+
+
+## Clean up Rating Count - Substring
+
+```{r rate_n_substring, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rate_n <- str_sub(amazon_rate_n, -5) # keep last 5 characters
+head(amazon_rate_n)
+```
+
+
+
+## Clean up Rating Count - Trim (Again)
+
+```{r rate_n_trim_2, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rate_n <- str_trim(amazon_rate_n)    # trim leading spaces
+head(amazon_rate_n)
+```
+
+
+
+## Clean up Rating Count - Set as Numeric
+
+```{r rate_n_numeric, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rate_n <- as.numeric(amazon_rate_n)
 head(amazon_rate_n)
 ```
@@ -355,7 +413,13 @@ head(amazon_rate_n)
 
 
 
-# Scraping the Book Publication Date
+# Publication Date
+
+<img src = "images/r4ds_publication_date.png">
+
+
+
+## Scraping the Book Publication Date
 
 ```{r pub_dt, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -425,26 +489,26 @@ All titles were populated and scraped accurately. However, due to multiple forma
 
 ```{r title_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_titles %>% 
-  append(values = amazon_titles[16], after = 16) %>% 
-  append(values = amazon_titles[15], after = 15) %>% 
-  append(values = amazon_titles[14], after = 14) %>% 
-  append(values = amazon_titles[13], after = 13) %>% 
-  append(values = amazon_titles[12], after = 12) %>% 
-  append(values = amazon_titles[11], after = 11) %>% 
-  append(values = amazon_titles[11], after = 11) %>% 
-  append(values = amazon_titles[10], after = 10) %>% 
-  append(values = amazon_titles[9], after = 9) %>% 
-  append(values = amazon_titles[8], after = 8) %>% 
-  append(values = amazon_titles[7], after = 7) %>% 
-  append(values = amazon_titles[6], after = 6) %>% 
-  append(values = amazon_titles[6], after = 6) %>% 
-  append(values = amazon_titles[5], after = 5) %>% 
-  append(values = amazon_titles[5], after = 5) %>% 
-  append(values = amazon_titles[4], after = 4) %>% 
-  append(values = amazon_titles[4], after = 4) %>% 
-  append(values = amazon_titles[3], after = 3) %>% 
-  append(values = amazon_titles[2], after = 2) %>% 
-  append(values = amazon_titles[1], after = 1) -> amazon_titles
+  append(values = amazon_titles[17], after = 17) %>% # R Companion
+  append(values = amazon_titles[16], after = 16) %>% # R for Dummies
+  append(values = amazon_titles[15], after = 15) %>% # Linear Models
+  append(values = amazon_titles[14], after = 14) %>% # R Cookbook
+  append(values = amazon_titles[13], after = 13) %>% # Intro to Stat Learn
+  append(values = amazon_titles[12], after = 12) %>% # Learning R
+  append(values = amazon_titles[11], after = 11) %>% # Baseball with R
+  append(values = amazon_titles[11], after = 11) %>% # Baseball with R
+  append(values = amazon_titles[10], after = 10) %>% # Stats with R
+  append(values = amazon_titles[9], after = 9) %>%   # Hands-On R
+  append(values = amazon_titles[8], after = 8) %>%   # Advanced R
+  append(values = amazon_titles[7], after = 7) %>%   # Advanced R
+  append(values = amazon_titles[6], after = 6) %>%   # Interactive Shiny
+  append(values = amazon_titles[6], after = 6) %>%   # Interactive Shiny
+  append(values = amazon_titles[5], after = 5) %>%   # GLM
+  append(values = amazon_titles[4], after = 4) %>%   # Discovering Stats
+  append(values = amazon_titles[4], after = 4) %>%   # Discovering Stats
+  append(values = amazon_titles[3], after = 3) %>%   # R Graphics
+  append(values = amazon_titles[2], after = 2) %>%   # Book of R
+  append(values = amazon_titles[1], after = 1) -> amazon_titles # R4DS
 length(amazon_titles)
 ```
 
@@ -462,7 +526,7 @@ length(amazon_format)
 
 ## Prices
 
-Nothing needed here!
+Or here!
 
 ```{r price_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 length(amazon_price)
@@ -474,18 +538,14 @@ length(amazon_price)
 
 Some books do not have ratings. A book only has one rating even if it has multiple formats.
 
-For example, the 5th and 7th book do not have ratings. For some reason, the 6th, 13th, 14th, and 16th book ratings were not captured.
+For example, the 6th and 9th book do not have ratings.
 
 We must also account for multiple formats.
 
 ```{r rate_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rating %>% 
-  append(values = NA, after = 4) %>%   #  4th - no rating
-  append(values = 4.8, after = 5) %>%  #  6th - missing rating
-  append(values = NA, after = 6) %>%   #  7th - no rating
-  append(values = 4.2, after = 12) %>% # 13th - missing rating
-  append(values = 3.9, after = 13) %>% # 14th - missing rating
-  append(values = 3.8, after = 14) -> amazon_rating
+  append(values = NA, after = 5) %>% 
+  append(values = NA, after = 8) -> amazon_rating
 length(amazon_rating)
 ```
 
@@ -499,26 +559,26 @@ The same corrections are done here.
 
 ```{r rate_missing_repeat, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rating %>% 
-  append(values = amazon_rating[16], after = 16) %>% 
-  append(values = amazon_rating[15], after = 15) %>% 
-  append(values = amazon_rating[14], after = 14) %>% 
-  append(values = amazon_rating[13], after = 13) %>% 
-  append(values = amazon_rating[12], after = 12) %>% 
-  append(values = amazon_rating[11], after = 11) %>% 
-  append(values = amazon_rating[11], after = 11) %>% 
-  append(values = amazon_rating[10], after = 10) %>% 
-  append(values = amazon_rating[9], after = 9) %>% 
-  append(values = amazon_rating[8], after = 8) %>% 
-  append(values = amazon_rating[7], after = 7) %>% 
-  append(values = amazon_rating[6], after = 6) %>% 
-  append(values = amazon_rating[6], after = 6) %>% 
-  append(values = amazon_rating[5], after = 5) %>% 
-  append(values = amazon_rating[5], after = 5) %>% 
-  append(values = amazon_rating[4], after = 4) %>% 
-  append(values = amazon_rating[4], after = 4) %>% 
-  append(values = amazon_rating[3], after = 3) %>% 
-  append(values = amazon_rating[2], after = 2) %>% 
-  append(values = amazon_rating[1], after = 1) -> amazon_rating
+  append(values = amazon_rating[17], after = 17) %>% # R Companion
+  append(values = amazon_rating[16], after = 16) %>% # R for Dummies
+  append(values = amazon_rating[15], after = 15) %>% # Linear Models
+  append(values = amazon_rating[14], after = 14) %>% # R Cookbook
+  append(values = amazon_rating[13], after = 13) %>% # Intro to Stat Learn
+  append(values = amazon_rating[12], after = 12) %>% # Learning R
+  append(values = amazon_rating[11], after = 11) %>% # Baseball with R
+  append(values = amazon_rating[11], after = 11) %>% # Baseball with R
+  append(values = amazon_rating[10], after = 10) %>% # Stats with R
+  append(values = amazon_rating[9], after = 9) %>%   # Hands-On R
+  append(values = amazon_rating[8], after = 8) %>%   # Advanced R
+  append(values = amazon_rating[7], after = 7) %>%   # Advanced R
+  append(values = amazon_rating[6], after = 6) %>%   # Interactive Shiny
+  append(values = amazon_rating[6], after = 6) %>%   # Interactive Shiny
+  append(values = amazon_rating[5], after = 5) %>%   # GLM
+  append(values = amazon_rating[4], after = 4) %>%   # Discovering Stats
+  append(values = amazon_rating[4], after = 4) %>%   # Discovering Stats
+  append(values = amazon_rating[3], after = 3) %>%   # R Graphics
+  append(values = amazon_rating[2], after = 2) %>%   # Book of R
+  append(values = amazon_rating[1], after = 1) -> amazon_rating # R4DS
 length(amazon_rating)
 ```
 
@@ -544,26 +604,26 @@ We must also account for multiple formats.
 
 ```{r rate_n_missing_repeat, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_rate_n %>% 
-  append(values = amazon_rate_n[16], after = 16) %>% 
-  append(values = amazon_rate_n[15], after = 15) %>% 
-  append(values = amazon_rate_n[14], after = 14) %>% 
-  append(values = amazon_rate_n[13], after = 13) %>% 
-  append(values = amazon_rate_n[12], after = 12) %>% 
-  append(values = amazon_rate_n[11], after = 11) %>% 
-  append(values = amazon_rate_n[11], after = 11) %>% 
-  append(values = amazon_rate_n[10], after = 10) %>% 
-  append(values = amazon_rate_n[9], after = 9) %>% 
-  append(values = amazon_rate_n[8], after = 8) %>% 
-  append(values = amazon_rate_n[7], after = 7) %>% 
-  append(values = amazon_rate_n[6], after = 6) %>% 
-  append(values = amazon_rate_n[6], after = 6) %>% 
-  append(values = amazon_rate_n[5], after = 5) %>% 
-  append(values = amazon_rate_n[5], after = 5) %>% 
-  append(values = amazon_rate_n[4], after = 4) %>% 
-  append(values = amazon_rate_n[4], after = 4) %>% 
-  append(values = amazon_rate_n[3], after = 3) %>% 
-  append(values = amazon_rate_n[2], after = 2) %>% 
-  append(values = amazon_rate_n[1], after = 1) -> amazon_rate_n
+  append(values = amazon_rate_n[17], after = 17) %>% # R Companion
+  append(values = amazon_rate_n[16], after = 16) %>% # R for Dummies
+  append(values = amazon_rate_n[15], after = 15) %>% # Linear Models
+  append(values = amazon_rate_n[14], after = 14) %>% # R Cookbook
+  append(values = amazon_rate_n[13], after = 13) %>% # Intro to Stat Learn
+  append(values = amazon_rate_n[12], after = 12) %>% # Learning R
+  append(values = amazon_rate_n[11], after = 11) %>% # Baseball with R
+  append(values = amazon_rate_n[11], after = 11) %>% # Baseball with R
+  append(values = amazon_rate_n[10], after = 10) %>% # Stats with R
+  append(values = amazon_rate_n[9], after = 9) %>%   # Hands-On R
+  append(values = amazon_rate_n[8], after = 8) %>%   # Advanced R
+  append(values = amazon_rate_n[7], after = 7) %>%   # Advanced R
+  append(values = amazon_rate_n[6], after = 6) %>%   # Interactive Shiny
+  append(values = amazon_rate_n[6], after = 6) %>%   # Interactive Shiny
+  append(values = amazon_rate_n[5], after = 5) %>%   # GLM
+  append(values = amazon_rate_n[4], after = 4) %>%   # Discovering Stats
+  append(values = amazon_rate_n[4], after = 4) %>%   # Discovering Stats
+  append(values = amazon_rate_n[3], after = 3) %>%   # R Graphics
+  append(values = amazon_rate_n[2], after = 2) %>%   # Book of R
+  append(values = amazon_rate_n[1], after = 1) -> amazon_rate_n # R4DS
 length(amazon_rate_n)
 ```
 
@@ -575,26 +635,26 @@ Create extra rows due to multiple book formats.
 
 ```{r pub_dt_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon_pub_dt %>% 
-  append(values = amazon_pub_dt[16], after = 16) %>% 
-  append(values = amazon_pub_dt[15], after = 15) %>% 
-  append(values = amazon_pub_dt[14], after = 14) %>% 
-  append(values = amazon_pub_dt[13], after = 13) %>% 
-  append(values = amazon_pub_dt[12], after = 12) %>% 
-  append(values = amazon_pub_dt[11], after = 11) %>% 
-  append(values = amazon_pub_dt[11], after = 11) %>% 
-  append(values = amazon_pub_dt[10], after = 10) %>% 
-  append(values = amazon_pub_dt[9], after = 9) %>% 
-  append(values = amazon_pub_dt[8], after = 8) %>% 
-  append(values = amazon_pub_dt[7], after = 7) %>% 
-  append(values = amazon_pub_dt[6], after = 6) %>% 
-  append(values = amazon_pub_dt[6], after = 6) %>% 
-  append(values = amazon_pub_dt[5], after = 5) %>% 
-  append(values = amazon_pub_dt[5], after = 5) %>% 
-  append(values = amazon_pub_dt[4], after = 4) %>% 
-  append(values = amazon_pub_dt[4], after = 4) %>% 
-  append(values = amazon_pub_dt[3], after = 3) %>% 
-  append(values = amazon_pub_dt[2], after = 2) %>% 
-  append(values = amazon_pub_dt[1], after = 1) -> amazon_pub_dt
+  append(values = amazon_pub_dt[17], after = 17) %>% # R Companion
+  append(values = amazon_pub_dt[16], after = 16) %>% # R for Dummies
+  append(values = amazon_pub_dt[15], after = 15) %>% # Linear Models
+  append(values = amazon_pub_dt[14], after = 14) %>% # R Cookbook
+  append(values = amazon_pub_dt[13], after = 13) %>% # Intro to Stat Learn
+  append(values = amazon_pub_dt[12], after = 12) %>% # Learning R
+  append(values = amazon_pub_dt[11], after = 11) %>% # Baseball with R
+  append(values = amazon_pub_dt[11], after = 11) %>% # Baseball with R
+  append(values = amazon_pub_dt[10], after = 10) %>% # Stats with R
+  append(values = amazon_pub_dt[9], after = 9) %>%   # Hands-On R
+  append(values = amazon_pub_dt[8], after = 8) %>%   # Advanced R
+  append(values = amazon_pub_dt[7], after = 7) %>%   # Advanced R
+  append(values = amazon_pub_dt[6], after = 6) %>%   # Interactive Shiny
+  append(values = amazon_pub_dt[6], after = 6) %>%   # Interactive Shiny
+  append(values = amazon_pub_dt[5], after = 5) %>%   # GLM
+  append(values = amazon_pub_dt[4], after = 4) %>%   # Discovering Stats
+  append(values = amazon_pub_dt[4], after = 4) %>%   # Discovering Stats
+  append(values = amazon_pub_dt[3], after = 3) %>%   # R Graphics
+  append(values = amazon_pub_dt[2], after = 2) %>%   # Book of R
+  append(values = amazon_pub_dt[1], after = 1) -> amazon_pub_dt # R4DS
 length(amazon_pub_dt)
 ```
 
@@ -618,13 +678,13 @@ length(amazon_pub_dt)
 # (Finally) Assemble the Data
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-#r_books <- tibble(title = amazon_titles,
-#                  text_format = amazon_format,
-#                  price = amazon_price,
-#                  rating = amazon_rating,
-#                  num_ratings = amazon_rate_n,
-#                  publication_date = amazon_pub_dt)
-#head(r_books)
+r_books <- tibble(title = amazon_titles,
+                  text_format = amazon_format,
+                  price = amazon_price,
+                  rating = amazon_rating,
+                  num_ratings = amazon_rate_n,
+                  publication_date = amazon_pub_dt)
+head(r_books)
 ```
 
 
