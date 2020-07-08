@@ -26,4 +26,4 @@ There are a few ways to select elements from a webpage.
 ## Presentation
 The .html files do not render directly as a true .html file within GitHub. [GitHub & BitBucket HTML Preview](https://htmlpreview.github.io/) works well to convert these .html files into viewable webpages.
 
-**The presentation [can be accessed here](https://htmlpreview.github.io/?https://github.com/mjhendrickson/Web-Scraping-with-R/blob/master/web-scraping-with-r.html#/).**
+**The presentation [can be accessed here](https://bit.ly/scraping_with_rvest).**
