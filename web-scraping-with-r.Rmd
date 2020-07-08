@@ -24,16 +24,17 @@ library(rvest)
 
 
 ```{r save files, include=FALSE, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE}
-# SAVE BACKUPS OF DATA FOR EASE OF COMPILATION
-#write.table(format, "data/format.txt")
-#write.table(price, "data/price.txt")
-#write.table(price_fraction, "data/price_fraction.txt")
-#write.table(price_whole, "data/price_whole.txt")
-#write.table(pub_dt, "data/pub_dt.txt")
-#write.table(rate_n, "data/rate_n.txt")
-#write.table(rating, "data/rating.txt")
-#write.table(titles, "data/titles.txt")
-#saveRDS(r_books, "data/r_books.rds")
+# SAVE BACKUPS OF DATA FOR CONSISTENT KNITTING
+write_xml(amazon, file="data/amazon.html")
+write.table(format, "data/format.txt")
+write.table(price, "data/price.txt")
+write.table(price_fraction, "data/price_fraction.txt")
+write.table(price_whole, "data/price_whole.txt")
+write.table(pub_dt, "data/pub_dt.txt")
+write.table(rate_n, "data/rate_n.txt")
+write.table(rating, "data/rating.txt")
+write.table(titles, "data/titles.txt")
+saveRDS(r_books, "data/r_books.rds")
 ```
 
 
@@ -50,7 +51,7 @@ library(rvest)
 - Dr. Matthew Hendrickson
 - Social Scientist by Training
      - Psychology & Music `%>%`
-     - More Psychology `%>%`
+     - Cognitive & Social Psychology `%>%`
      - Law & Policy
 - Professional Experience (13+ years)
      - Higher Education Analyst
@@ -78,12 +79,10 @@ library(rvest)
 
 # A Little About Web Scraping
 
-"Web scraping is the process of automatically mining data or collecting information from the World Wide Web."
-
-  -- Wikipedia
+"Web scraping is the process of automatically mining data or collecting information from the World Wide Web." <font size="2">-- Wikipedia</font>
 
 <br>
-Web scraping is a flexible method to extract data from the internet. It can involve extracting numerical or text data.
+Web scraping is a flexible method to extract data from the internet. It can involve extracting numerical or textual data.
 
 
 
@@ -92,8 +91,8 @@ Web scraping is a flexible method to extract data from the internet. It can invo
 There are many uses for web scraping, including but not limited to:
 
    1. Price monitoring
-   2. Sentiment analysis
-   3. Time series tracking and analysis
+   2. Time series tracking and analysis
+   3. Sentiment analysis
    4. Brand monitoring
    5. Market analysis
    6. Lead generation
@@ -103,8 +102,8 @@ There are many uses for web scraping, including but not limited to:
 # Robots!
 
 - No, not those robots!
-- Always ensure - <strong>PRIOR to scraping</strong> - that you have scraping rights!
-- This is <strong>critical</strong> - you can be blocked or even face legal action!
+- _Always_ ensure __PRIOR to scraping__ -hat you have scraping rights!
+- This is __critical__ - you can be blocked or even face legal action!
 
 
 
@@ -116,21 +115,28 @@ Good news! You can easily check with the `robotstxt` package.
 paths_allowed(paths = c("https://netflix.com/"))
 ```
 
-Netflix does not allow you to scrape their site.
+Netflix does _not_ allow you to scrape their site.
 
 
 
 
 
 # HTML & CSS
-"HTML is the standard markup language for creating Web pages."
-
-  -- W3Schools
 
 <br>
+
+_Hyper Text Markup Language_
+
+"HTML is the standard markup language for creating Web pages."
+
+<br>
+<br>
+
+_Cascading Style Sheets_
+
 "CSS describes how HTML elements are to be displayed on screen, paper, or in other media."
 
-  -- W3Schools
+<font size="2">-- W3Schools</font>
 
 
 
@@ -138,34 +144,38 @@ Netflix does not allow you to scrape their site.
 
 <img src = "images/html-structure.png">
 
-<p style = "font-size:65%;">Image credit: [Professor Shawn Santo](http://www2.stat.duke.edu/~fl35/teaching/440-19F/decks/webscraping2.html#3)</p>
+<font size="2">Image credit: [Professor Shawn Santo](http://www2.stat.duke.edu/~fl35/teaching/440-19F/decks/webscraping2.html#3)</font>
 
 
 
 ## HTML Tags
 
-HTML is structured with "tags," which indicate portions of the page and can be called by their structure.
+HTML is structured with "tags," indicating portions of a page.
 
-There are many types of tags - here are some important ones for scraping:
+Tags can be called by their structure.
 
-- `<h1>`    - header tags
-- `<p>`     - paragraph elements
-- `<ul>`    - unordered bulleted list
-- `<ol>`    - ordered list
-- `<li>`    - individual list item
-- `<div>`   - division
-- `<table>` - table
+Tags can be nested.
+
+A few important tags (of many) for scraping:
+
+- `<h1>` header tags `</h1>`
+- `<p>` paragraph elements `</p>`
+- `<ul>` unordered bulleted list `</ul>`
+- `<ol>` ordered list `</ol>`
+- `<li>` individual list item `</li>`
+- `<div>` division `</div>`
+- `<table>` table `</table>`
 
 
 
 ## A Little Help with CSS
-If you aren't familiar with CSS, extracting parts of a website can be daunting.
-
-[SelectorGadget](https://selectorgadget.com/) is incredibly helpful. However, it is only available for Chrome.
+Extracting parts of a website can be daunting if unfamiliar with CSS.
 
 <img src = "images/selector_gadget.png">
 
-Inspect the page elements is also helpful, which is available as a developer tool for most major browsers.
+[SelectorGadget](https://selectorgadget.com/) is helpful (Chrome only).
+
+Inspect the page elements is also helpful (most major browsers).
 
 
 
@@ -195,14 +205,11 @@ That's it!
 
 ## Determine a website to scrape
 
-It only seems appropriate to pull data from R books on Amazon.
-
-Ensure we can scrape the site.
+Seems appropriate to pull R book data from Amazon.
 
 ```{r robots_amazon, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 paths_allowed(paths = c("https://amazon.com/"))
 ```
-
 
 <br>
 We are good to scrape!
@@ -211,14 +218,21 @@ We are good to scrape!
 
 
 
-# Setting the URL
+# Specify the URL
 
-Before you get started, you must specificy the URL.
+Before you get started, you must specify the URL.
 
-Data as of `r Sys.Date()`.
-
-```{r amazon_html, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
+```{r amazon_html, echo = TRUE, message = FALSE, warning = FALSE, eval = FALSE}
 amazon <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&qid=1592086532&rnid=1000&ref=sr_nr_n_1")
+```
+
+<font size="3">Data as of 2020-07-07</font>
+
+
+
+```{r amazon_call, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
+# Import the saved Amazon html for consistency in cleaning and presentation
+amazon <- read_html("data/amazon.html")
 ```
 
 
@@ -231,7 +245,7 @@ amazon <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn
 
 
 
-## Scraping Book Titles
+## Scraping book titles
 
 ```{r title, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -246,14 +260,12 @@ Let's clean this up with `str_trim`.
 
 
 
-## Removing white space and breaks (`\n`) from the Titles
+## Removing `\n` and white space from the titles
 
 ```{r title_clean, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 titles <- str_trim(titles) # Removes leading & trailing space
 head(titles)
 ```
-
-This simple function returns cleaned text.
 
 
 
@@ -264,7 +276,7 @@ This simple function returns cleaned text.
 <img src = "images/r4ds_format.png">
 
 
-## Scraping the Book Format
+## Scraping the book format
 
 ```{r format, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -294,7 +306,7 @@ head(format)
 
 
 
-## Scraping the Book Price
+## Scraping the book price
 
 The price structure splits price into two elements. We must pull each and combine them into a single price.
 
@@ -307,7 +319,7 @@ head(price_whole)
 
 
 
-## Scraping (the rest of) the Book Price
+## Scraping (the rest of) the book price
 
 ```{r price_fraction, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -318,7 +330,7 @@ head(price_fraction)
 
 
 
-## Combine Price Portions
+## Combine price portions
 
 ```{r price_total, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 price <- paste(price_whole, price_fraction, sep = "")
@@ -344,7 +356,7 @@ head(price)
 
 
 
-## Scraping the Book Rating
+## Scraping the book rating
 
 ```{r rate, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -358,7 +370,7 @@ head(rating)
 ## Let's trim this into a usable metric
 
 ```{r rate_trim, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-rating <- substr(rating, 1, 3) # Takes 3 characters starting at 1
+rating <- substr(rating, 1, 3)
 head(rating)
 ```
 
@@ -381,7 +393,7 @@ head(rating)
 
 
 
-## Scraping the Book Rating Count
+## Scraping the book rating count
 
 This element is messier and we'll need a number of cleaning steps.
 
@@ -394,34 +406,34 @@ head(rate_n)
 
 
 
-## Trim the Rating Count
+## Trim the rating count
 
 ```{r rate_n_trim, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-rate_n <- str_trim(rate_n) # trim \n & ' '
+rate_n <- str_trim(rate_n)
 head(rate_n)
 ```
 
 
 
-## Rating Count - Substring
+## Rating count - substring
 
 ```{r rate_n_substring, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-rate_n <- str_sub(rate_n, -5) # keep last 5 characters
+rate_n <- str_sub(rate_n, -5)
 head(rate_n)
 ```
 
 
 
-## Trim the Rating Count (Again)
+## Trim the rating count (again)
 
 ```{r rate_n_trim_2, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-rate_n <- str_trim(rate_n) # trim leading spaces
+rate_n <- str_trim(rate_n)
 head(rate_n)
 ```
 
 
 
-## Set as Numeric
+## Set as numeric
 
 ```{r rate_n_numeric, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rate_n <- as.numeric(rate_n)
@@ -438,7 +450,7 @@ head(rate_n)
 
 
 
-## Scraping the Book Publication Date
+## Scraping the book publication date
 
 ```{r pub_dt, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -473,7 +485,7 @@ Let's assemble the file!
 
 
 
-## Let's Check the Scrapes
+## Let's check the scrapes
 
 ```{r uneven_counts, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 length(titles)
@@ -484,15 +496,17 @@ length(rate_n)
 length(pub_dt)
 ```
 
+_Wait! What?!?_
 
 
-## Wait! What?!?
+
+## What Happened?
 
 An issue with scraping is sometimes you get an uneven number of records due to missing data elements.
 
 We can fix this!
 
-- ...manually...
+_...manually..._
 
 
 
@@ -502,7 +516,7 @@ We can fix this!
 
 
 
-## Titles
+# Fixing Titles
 
 All titles were populated and scraped accurately. However, due to multiple formats, these records must be repeated to fill the dataframe.
 
@@ -514,34 +528,22 @@ length(titles)
 
 
 
-## Titles
-
-Some titles have only 1 format.
-
-```{r title_missing_2, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-titles <- titles [-c(10, 20, 30, 34, 40)]
-length(titles)
-```
-
-
-
-## Titles
+## Fixing Titles
 
 Some titles have more than 2 formats.
 
 ```{r title_missing_3, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 titles %>% 
-  append(values = titles[33], after = 33) %>% 
-  append(values = titles[25], after = 25) %>% 
-  append(values = titles[12], after = 12) %>% 
-  append(values = titles[10], after = 10) %>% 
+  append(values = titles[15], after = 15) %>% 
+  append(values = titles[11], after = 11) %>% 
+  append(values = titles[9], after = 9) %>% 
   append(values = titles[5], after = 5) -> titles
 length(titles)
 ```
 
 
 
-## Formats
+# Fixing Formats
 
 Nothing needed here!
 
@@ -551,7 +553,7 @@ length(format)
 
 
 
-## Prices
+# Fixing Prices
 
 Or here!
 
@@ -561,27 +563,22 @@ length(price)
 
 
 
-## Ratings
+# Fixing Ratings
 
-Some books don't have ratings.
-
-A book only has one rating even if it has multiple formats.
-
-We must also account for multiple formats.
+Two books don't have ratings.
 
 ```{r rate_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rating %>% 
-  append(values = NA, after = 14) %>% 
-  append(values = NA, after = 12) %>% 
-  append(values = NA, after = 12) -> rating
+  append(values = NA, after = 7) %>% 
+  append(values = NA, after = 11) -> rating
 length(rating)
 ```
 
 
 
-## Ratings
+## Fixing Ratings
 
-Like titles, the ratings need to be repeated to show on the correct row.
+Like titles, the ratings need to be repeated.
 
 The same corrections are done here.
 
@@ -593,50 +590,37 @@ length(rating)
 
 
 
-## Ratings
+## Fixing Ratings
 
-Some books have only 1 format.
+Books with more than 2 formats.
 
 ```{r rate_missing_3, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-rating <- rating [-c(10, 20, 30, 34, 40)]
-length(rating)
-```
-
-
-
-## Ratings
-
-Some books have more than 2 formats.
-
-```{r rate_missing_4, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rating %>% 
-  append(values = rating[33], after = 33) %>% 
-  append(values = rating[25], after = 25) %>% 
-  append(values = rating[12], after = 12) %>% 
-  append(values = rating[10], after = 10) %>% 
+  append(values = rating[15], after = 15) %>% 
+  append(values = rating[11], after = 11) %>% 
+  append(values = rating[9], after = 9) %>% 
   append(values = rating[5], after = 5) -> rating
 length(rating)
 ```
 
 
 
-## Rating Counts
+# Fixing Rating Counts
 
-Not all titles have a rating.
+Not all titles have a rating and won't have a rating count.
 
 ```{r rate_n_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rate_n %>% 
-  append(values = NA, after = 14) %>% 
-  append(values = NA, after = 12) %>% 
-  append(values = NA, after = 12) -> rate_n
+  append(values = NA, after = 7) %>% 
+  append(values = NA, after = 11) -> rate_n
 length(rate_n)
 ```
 
 
 
-## Rating Counts
+## Fixing Rating Counts
 
-Like titles, the ratings need to be repeated to show on the correct row.
+Like titles, the rating counts need to be repeated.
 
 The same corrections are done here.
 
@@ -648,36 +632,24 @@ length(rate_n)
 
 
 
-## Rating Counts
+## Fixing Rating Counts
 
-Some books have only 1 format.
+Books with more than 2 formats.
 
 ```{r rate_n_missing_3, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-rate_n <- rate_n [-c(10, 20, 30, 34, 40)]
-length(rate_n)
-```
-
-
-
-## Rating Counts
-
-Some books have more than 2 formats.
-
-```{r rate_n_missing_4, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rate_n %>% 
-  append(values = rate_n[33], after = 33) %>% 
-  append(values = rate_n[25], after = 25) %>% 
-  append(values = rate_n[12], after = 12) %>% 
-  append(values = rate_n[10], after = 10) %>% 
+  append(values = rate_n[15], after = 15) %>% 
+  append(values = rate_n[11], after = 11) %>% 
+  append(values = rate_n[9], after = 9) %>% 
   append(values = rate_n[5], after = 5) -> rate_n
 length(rate_n)
 ```
 
 
 
-## Publication Date
+# Fixing Publication Date
 
-Create extra rows due to multiple book formats.
+Like titles, the publication dates need to be repeated.
 
 ```{r pub_dt_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 pub_dt %>% 
@@ -687,34 +659,22 @@ length(pub_dt)
 
 
 
-## Publication Date
+## Fixing Publication Date
 
-Some books have only 1 format.
-
-```{r pub_dt_missing_2, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
-pub_dt <- pub_dt [-c(10, 20, 30, 34, 40)]
-length(pub_dt)
-```
-
-
-
-## Publication Date
-
-Some books have more than 2 formats.
+Books with more than 2 formats.
 
 ```{r pub_dt_missing_3, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 pub_dt %>% 
-  append(values = pub_dt[33], after = 33) %>% 
-  append(values = pub_dt[25], after = 25) %>% 
-  append(values = pub_dt[12], after = 12) %>% 
-  append(values = pub_dt[10], after = 10) %>% 
+  append(values = pub_dt[15], after = 15) %>% 
+  append(values = pub_dt[11], after = 11) %>% 
+  append(values = pub_dt[9], after = 9) %>% 
   append(values = pub_dt[5], after = 5) -> pub_dt
 length(pub_dt)
 ```
 
 
 
-## One More Check!
+# One Last Check!
 
 ```{r even_counts, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 length(titles)
@@ -731,7 +691,7 @@ length(pub_dt)
 
 # (Finally) Assemble the Data
 
-```{r final, echo = TRUE, message = FALSE, warning = FALSE, eval = FALSE}
+```{r final, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 r_books <- tibble(title            = titles,
                   text_format      = format,
                   price            = price,
@@ -740,33 +700,6 @@ r_books <- tibble(title            = titles,
                   publication_date = pub_dt)
 head(r_books)
 ```
-
-
-
-```{r final_printed, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
-r_books <- readRDS("data/r_books.rds")
-head(r_books)
-```
-
-
-
-
-
-# Thank you
-<img src = "images/twitter.png" width="30" height="30">  
-[\@mjhendrickson](https://twitter.com/mjhendrickson)
-
-<img src = "images/linkedin.png" width="30" height="30">  
-[matthewjhendrickson](https://www.linkedin.com/in/matthewjhendrickson/)
-
-<img src = "images/github.png" width="30" height="30">  
-[mjhendrickson](https://github.com/mjhendrickson)
-
-</br>
-
-[Web Scraping in R & rvest repo](https://github.com/mjhendrickson/Web-Scraping-with-R)
-
-This talk is freely distributed under the MIT License.
 
 
 
@@ -790,3 +723,23 @@ This talk is freely distributed under the MIT License.
 - W3Schools (no date). "HTML Introduction." [https://www.w3schools.com/html/html_intro.asp](https://www.w3schools.com/html/html_intro.asp).
 - W3Schools (no date). "XPath Syntax." [https://www.w3schools.com/xml/xpath_syntax.asp](https://www.w3schools.com/xml/xpath_syntax.asp).
 - Wikipedia (2020). "Web scraping." [https://en.wikipedia.org/wiki/Web_scraping](https://en.wikipedia.org/wiki/Web_scraping).
+
+
+
+
+
+# Thank you
+<img src = "images/twitter.png" width="30" height="30">  
+[\@mjhendrickson](https://twitter.com/mjhendrickson)
+
+<img src = "images/linkedin.png" width="30" height="30">  
+[matthewjhendrickson](https://www.linkedin.com/in/matthewjhendrickson/)
+
+<img src = "images/github.png" width="30" height="30">  
+[mjhendrickson](https://github.com/mjhendrickson)
+
+<br>
+
+[Web Scraping in R & rvest on GitHub](https://github.com/mjhendrickson/Web-Scraping-with-R)
+
+This talk is freely distributed under the MIT License.
