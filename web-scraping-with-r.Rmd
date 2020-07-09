@@ -17,10 +17,11 @@ output:
 
 ```{r setup, include=FALSE, echo = FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE, comment = "#>", collapse = TRUE)
-library(tidyverse)
 library(robotstxt)
 library(rvest)
+library(tidyverse)
 ```
+
 
 
 ```{r save files, include=FALSE, echo = FALSE, message = FALSE, warning = FALSE, eval = FALSE}
@@ -79,19 +80,19 @@ saveRDS(r_books, "data/r_books.rds")
 
 # A Little About Web Scraping
 
-"Web scraping is the process of automatically mining data or collecting information from the World Wide Web." <font size="2">-- Wikipedia</font>
+"Web scraping is the process of automatically mining data or collecting information from the World Wide Web" <font size="2">-- Wikipedia</font>
 
 <br>
-Web scraping is a flexible method to extract data from the internet. It can involve extracting numerical or textual data.
+Web scraping is a flexible method to extract numerical or textual data from the internet
 
 
 
 ## Use Cases
 
-There are many uses for web scraping, including but not limited to:
+There are many uses for web scraping, including:
 
    1. Price monitoring
-   2. Time series tracking and analysis
+   2. Time series tracking & analysis
    3. Sentiment analysis
    4. Brand monitoring
    5. Market analysis
@@ -102,20 +103,20 @@ There are many uses for web scraping, including but not limited to:
 # Robots!
 
 - No, not those robots!
-- _Always_ ensure __PRIOR to scraping__ -hat you have scraping rights!
-- This is __critical__ - you can be blocked or even face legal action!
+- _Always_ ensure __PRIOR to scraping__ that you have scraping rights!
+- This is __critical__ as you can be blocked or even face legal action!
 
 
 
 ## Robots.txt
 
-Good news! You can easily check with the `robotstxt` package.
+You can easily check with the `robotstxt` package
 
 ```{r robots, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 paths_allowed(paths = c("https://netflix.com/"))
 ```
 
-Netflix does _not_ allow you to scrape their site.
+Netflix does _not_ allow you to scrape their site
 
 
 
@@ -127,14 +128,14 @@ Netflix does _not_ allow you to scrape their site.
 
 _Hyper Text Markup Language_
 
-"HTML is the standard markup language for creating Web pages."
+"HTML is the standard markup language for creating Web pages"
 
 <br>
 <br>
 
 _Cascading Style Sheets_
 
-"CSS describes how HTML elements are to be displayed on screen, paper, or in other media."
+"CSS describes how HTML elements are to be displayed on screen, paper, or in other media"
 
 <font size="2">-- W3Schools</font>
 
@@ -150,11 +151,11 @@ _Cascading Style Sheets_
 
 ## HTML Tags
 
-HTML is structured with "tags," indicating portions of a page.
+HTML is structured with "tags" indicating portions of a page
 
-Tags can be called by their structure.
+Tags can be called by their structure
 
-Tags can be nested.
+Tags can be nested
 
 A few important tags (of many) for scraping:
 
@@ -169,19 +170,19 @@ A few important tags (of many) for scraping:
 
 
 ## A Little Help with CSS
-Extracting parts of a website can be daunting if unfamiliar with CSS.
+Extracting parts of a website can be daunting if unfamiliar with CSS
 
 <img src = "images/selector_gadget.png">
 
-[SelectorGadget](https://selectorgadget.com/) is helpful (Chrome only).
+[SelectorGadget](https://selectorgadget.com/) is helpful (Chrome only)
 
-Inspect the page elements is also helpful (most major browsers).
+Inspect the page elements is also helpful
 
 
 
 ## Scraping Methods
 
-HTML - syntax is easier and aligns with HTML tags
+HTML - syntax is easier & aligns with HTML tags
 
 XPATH - useful when the node isn't uniquely identified with CSS
 
@@ -191,12 +192,10 @@ XPATH - useful when the node isn't uniquely identified with CSS
 
 # The Setup
 
-Set up the environment to scrape the site.
-
 ```{r setup_slide, eval = FALSE}
-library(tidyverse)
 library(robotstxt)
 library(rvest)
+library(tidyverse)
 ```
 
 That's it!
@@ -205,7 +204,7 @@ That's it!
 
 ## Determine a website to scrape
 
-Seems appropriate to pull R book data from Amazon.
+Seems appropriate to pull R book data from Amazon
 
 ```{r robots_amazon, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 paths_allowed(paths = c("https://amazon.com/"))
@@ -219,8 +218,6 @@ We are good to scrape!
 
 
 # Specify the URL
-
-Before you get started, you must specify the URL.
 
 ```{r amazon_html, echo = TRUE, message = FALSE, warning = FALSE, eval = FALSE}
 amazon <- read_html("https://www.amazon.com/s?k=R&i=stripbooks&rh=n%3A283155%2Cn%3A75%2Cn%3A13983&dc&qid=1592086532&rnid=1000&ref=sr_nr_n_1")
@@ -254,13 +251,11 @@ amazon %>%
 head(titles)
 ```
 
-The element pulls a number of breaks and blank spaces.
-
-Let's clean this up with `str_trim`.
 
 
 
-## Removing `\n` and white space from the titles
+
+## Removing `\n` & white space from the titles
 
 ```{r title_clean, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 titles <- str_trim(titles) # Removes leading & trailing space
@@ -274,6 +269,7 @@ head(titles)
 # Formats
 
 <img src = "images/r4ds_format.png">
+
 
 
 ## Scraping the book format
@@ -307,8 +303,6 @@ head(format)
 
 
 ## Scraping the book price
-
-The price structure splits price into two elements. We must pull each and combine them into a single price.
 
 ```{r price_whole, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -367,7 +361,7 @@ head(rating)
 
 
 
-## Let's trim this into a usable metric
+## Trim into a usable metric
 
 ```{r rate_trim, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rating <- substr(rating, 1, 3)
@@ -394,8 +388,6 @@ head(rating)
 
 
 ## Scraping the book rating count
-
-This element is messier and we'll need a number of cleaning steps.
 
 ```{r rate_n, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 amazon %>% 
@@ -485,7 +477,7 @@ Let's assemble the file!
 
 
 
-## Let's check the scrapes
+## Check the scrapes
 
 ```{r uneven_counts, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 length(titles)
@@ -502,10 +494,11 @@ _Wait! What?!?_
 
 ## What Happened?
 
-An issue with scraping is sometimes you get an uneven number of records due to missing data elements.
+Sometimes you get an uneven number of records in the scrape
 
 We can fix this!
 
+<br>
 _...manually..._
 
 
@@ -516,9 +509,11 @@ _...manually..._
 
 
 
+
+
 # Fixing Titles
 
-All titles were populated and scraped accurately. However, due to multiple formats, these records must be repeated to fill the dataframe.
+Titles scraped accurately, but have multiple formats
 
 ```{r title_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 titles %>% 
@@ -530,7 +525,7 @@ length(titles)
 
 ## Fixing Titles
 
-Some titles have more than 2 formats.
+Some books have 3 formats
 
 ```{r title_missing_3, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 titles %>% 
@@ -540,6 +535,8 @@ titles %>%
   append(values = titles[5], after = 5) -> titles
 length(titles)
 ```
+
+
 
 
 
@@ -553,6 +550,8 @@ length(format)
 
 
 
+
+
 # Fixing Prices
 
 Or here!
@@ -563,9 +562,11 @@ length(price)
 
 
 
+
+
 # Fixing Ratings
 
-Two books don't have ratings.
+Books missing ratings
 
 ```{r rate_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rating %>% 
@@ -578,9 +579,7 @@ length(rating)
 
 ## Fixing Ratings
 
-Like titles, the ratings need to be repeated.
-
-The same corrections are done here.
+Multiple formats - repeat ratings
 
 ```{r rate_missing_2, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rating %>% 
@@ -592,7 +591,7 @@ length(rating)
 
 ## Fixing Ratings
 
-Books with more than 2 formats.
+Books with 3 formats
 
 ```{r rate_missing_3, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rating %>% 
@@ -605,9 +604,11 @@ length(rating)
 
 
 
+
+
 # Fixing Rating Counts
 
-Not all titles have a rating and won't have a rating count.
+Books missing ratings & rating counts
 
 ```{r rate_n_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rate_n %>% 
@@ -620,9 +621,7 @@ length(rate_n)
 
 ## Fixing Rating Counts
 
-Like titles, the rating counts need to be repeated.
-
-The same corrections are done here.
+Multiple formats - repeat rating counts
 
 ```{r rate_n_missing_2, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rate_n %>% 
@@ -634,7 +633,7 @@ length(rate_n)
 
 ## Fixing Rating Counts
 
-Books with more than 2 formats.
+Books with 3 formats
 
 ```{r rate_n_missing_3, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 rate_n %>% 
@@ -647,9 +646,11 @@ length(rate_n)
 
 
 
+
+
 # Fixing Publication Date
 
-Like titles, the publication dates need to be repeated.
+Multiple formats - repeat publication dates
 
 ```{r pub_dt_missing, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 pub_dt %>% 
@@ -661,7 +662,7 @@ length(pub_dt)
 
 ## Fixing Publication Date
 
-Books with more than 2 formats.
+Books with 3 formats
 
 ```{r pub_dt_missing_3, echo = TRUE, message = FALSE, warning = FALSE, eval = TRUE}
 pub_dt %>% 
@@ -671,6 +672,8 @@ pub_dt %>%
   append(values = pub_dt[5], after = 5) -> pub_dt
 length(pub_dt)
 ```
+
+
 
 
 
@@ -715,7 +718,7 @@ head(r_books)
 
 
 
-# References & Resources continued
+## References & Resources continued
 
 - Perceptive Analytics on KDnuggets (2018). "A Primer on Web Scraping in R." [https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html](https://www.kdnuggets.com/2018/01/primer-web-scraping-r.html).
 - Rsquared Academy (2019). "Practical Introduction to Web Scraping in R." [https://blog.rsquaredacademy.com/web-scraping/](https://blog.rsquaredacademy.com/web-scraping/).
